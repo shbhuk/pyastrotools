@@ -46,7 +46,6 @@ import astropy.units as u
 from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 from astroquery.mast import Catalogs
-from astroquery.gaia import Gaia
 
 
 c = ac.c.value #[m/s]
@@ -381,6 +380,8 @@ def get_stellar_data_and_mag(name='',
 
 
 	if QueryGaia:
+		from astroquery.gaia import Gaia
+
 		j = Gaia.cone_search_async(coord, 50*u.arcsec)
 		r = j.get_results()
 		star_output['pmra'] = r['pmra'][0]

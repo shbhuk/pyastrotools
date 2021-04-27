@@ -17,17 +17,22 @@ Location = os.path.dirname(os.path.abspath(__file__))
 print(Location)
 
 
-from mrexo.predict import predict_from_measurement
-from astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, mdwarf_teff_from_r, fgk_teff_from_mr_feh, get_stellar_data_and_mag
+from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, mdwarf_teff_from_r, fgk_teff_from_mr_feh, get_stellar_data_and_mag
 
-ETCDirectory = r"C:\Users\shbhu\Documents\GitHub\TESS_MADNESS\src\ETC"
-sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20190329"))
-from neid_etcalc_public import NEID_RV_prec
+try:
+	ETCDirectory = r"C:\Users\shbhu\Documents\GitHub\TESS_MADNESS\src\ETC"
+	sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20190329"))
+	from neid_etcalc_public import NEID_RV_prec
 
-sys.path.append(os.path.join(ETCDirectory, "HPF"))
-from rvprec import HPF_ETC
+	sys.path.append(os.path.join(ETCDirectory, "HPF"))
+	from rvprec import HPF_ETC
+except:
+	print("Unable to load HPF and NEID ETCs")
 
-
+try:
+	from mrexo.predict import predict_from_measurement
+except:
+	print("Unable to import MRExo")
 
 
 def find_location(obsname=None, lat=0., longi=0., alt=0.):
