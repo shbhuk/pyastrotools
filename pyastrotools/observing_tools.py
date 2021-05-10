@@ -721,7 +721,7 @@ def obs_planning_transit(pl_name, RA, Dec,
 
 
 def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1, pl_masse=None,
-          pl_orbpererr1=0.0, st_masserr1=0.0, pl_radeerr1=0.0, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
+          pl_orbpererr1=0.0, st_masserr1=0.0, pl_radeerr1=np.nan, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
           return_mass_only=False, simulation=True, set_seed=0):
     '''
     INPUTS:
@@ -836,7 +836,7 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 
 
 def fgk_hpfneid_observability(pl_rade, Vmag, Jmag, pl_orbper, st_mass,
-          pl_orbpererr1 = 0.0, st_masserr1=0.0, pl_radeerr1=0.0, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
+          pl_orbpererr1 = 0.0, st_masserr1=0.0, pl_radeerr1=np.nan, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
           return_mass_only=False, simulation=True, set_seed=0):
     '''
     INPUTS:
