@@ -1021,9 +1021,10 @@ def QueryObjectPosition(ObsTime,
 	moon_separation = np.min(moon_obj.separation(target)).deg
 	moon_illumination = observatory.moon_illumination(ObsTime)
 	
-	print("Object {} is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(TargetName, targetaltaz_obsnight.alt, targetaltaz_obsnight.az, targetaltaz_obsnight.secz))
-	print("Sun is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(sun_altaz.alt, sun_altaz.az, sun_altaz.secz))
-	print("Moon is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(moon_altaz.alt, moon_altaz.az, moon_altaz.secz))
-	print("Moon is {:.2f} deg away from target with illumination = {:.2f} %".format(moon_separation, moon_illumination)) 
+	if len(ObsTime) == 1:
+		print("Object {} is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(TargetName, targetaltaz_obsnight.alt, targetaltaz_obsnight.az, targetaltaz_obsnight.secz))
+		print("Sun is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(sun_altaz.alt, sun_altaz.az, sun_altaz.secz))
+		print("Moon is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(moon_altaz.alt, moon_altaz.az, moon_altaz.secz))
+		print("Moon is {:.2f} deg away from target with illumination = {:.2f} %".format(moon_separation, moon_illumination)) 
 
 	return targetaltaz_obsnight, sun_altaz, moon_altaz
