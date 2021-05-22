@@ -300,6 +300,82 @@ def change_spectral_bin(wavelength=None, nu=None, dnu=None, dlambda = None):
 	return {'lambda':wavelength.to(u.m),'dlambda':dlambda.to(u.m),'nu':nu.to(u.Hz),'dnu':dnu.to(u.Hz)}
 
 
+
+def _QuerySimbad(Name):
+	'''
+	Function to query Simbad for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
+	INPUTS:
+		name = Name of source. Example
+
+
+	'''
+	warning = []
+
+	print('Querying SIMBAD for {}'.format(Name))
+
+	customSimbad = Simbad()
+	customSimbad.add_votable_fields('ra(2;A;ICRS;J2000)', 'dec(2;D;ICRS;J2000)','pm', 'plx','parallax','rv_value', 'sptype',
+	'flux(U)','flux(B)','flux(V)','flux(R)','flux(I)','flux(J)','flux(H)','flux(K)')
+	#Simbad.list_votable_fields()
+	customSimbad.remove_votable_fields( 'coordinates')
+	#Simbad.get_field_description('orv')
+	obj = customSimbad.query_object(Name)
+	if obj is None:
+		raise ValueError('ERROR: {} target not found. Check target name or enter RA,Dec,PMRA,PMDec,Plx,RV,Epoch manually\n\n'.format(Name))
+	else:
+		warning += ['{} queried from SIMBAD.'.format(Name)]
+
+	# Check for masked values
+	if all([not x for x in [obj.mask[0][i] for i in obj.colnames]])==False:
+		warning += ['Masked values present in output']
+
+
+	obj = obj.filled(None)
+
+	pos = SkyCoord(ra=obj['RA_2_A_ICRS_J2000'],dec=obj['DEC_2_D_ICRS_J2000'],unit=(u.hourangle, u.deg))
+	ra = pos.ra.value[0]
+	dec = pos.dec.value[0]
+	pmra = obj['PMRA'][0]
+	pmdec = obj['PMDEC'][0]
+	plx = obj['PLX_VALUE'][0]
+	rv = obj['RV_VALUE'][0] * 1000 #SIMBAD output is in km/s. Converting to m/s
+	epoch = 2451545.0
+	sp_type = obj['SP_TYPE'][0]
+
+	star = {'ra':ra,'dec':dec,'pmra':pmra,'pmdec':pmdec,'px':plx,'rv':rv,'epoch':epoch, 'sp_type':sp_type,
+	'Umag':obj['FLUX_U'][0],'Bmag':obj['FLUX_B'][0],'Vmag':obj['FLUX_V'][0],'Rmag':obj['FLUX_R'][0],
+	'Imag':obj['FLUX_I'][0],'Jmag':obj['FLUX_J'][0],'Hmag':obj['FLUX_H'][0],'Kmag':obj['FLUX_K'][0]}
+
+	return star,warning
+
+
+def _QueryTIC(Name, Radius=2):
+	"""
+	Query the TIC Catalogue
+	
+	Name: Name to query catalogue. For example 'Proxima' or 'TIC 172370679'
+	Radius: Radius in arcseconds to query
+	"""
+	_d = Catalogs.query_object(Name.replace(' ', '').replace('-', '').lower(), radius=Radius*u.arcsec, catalog="TIC").to_pandas()
+	
+	return _d
+
+
+def _QueryGaia(coord, Radius=20):
+	"""
+	Query Gaia catalogue
+	coord: Astropy SkyCoord object
+	Radius: Radius in arcseconds to query
+	"""
+	from astroquery.gaia import Gaia
+
+	j = Gaia.cone_search_async(coord, 20*u.arcsec)
+	r = j.get_results()
+	
+	return r
+
+
+
 def get_stellar_data_and_mag(name='',
 					RA=None, Dec=None, PMRA=None, PMDec=None,PMEpoch = 2015.5, Equinox=2000.0, Vmag=None, Jmag=None,
 					QueryTIC=True, QueryGaia=True, QuerySimbad=True):
@@ -320,45 +396,12 @@ def get_stellar_data_and_mag(name='',
 	star_tic = {}
 
 	if QuerySimbad:
-		print('Querying SIMBAD for {}'.format(name))
-
-		customSimbad = Simbad()
-		customSimbad.add_votable_fields('ra(2;A;ICRS;J2000)', 'dec(2;D;ICRS;J2000)','pm', 'plx','parallax','rv_value', 'sptype',
-		'flux(U)','flux(B)','flux(V)','flux(R)','flux(I)','flux(J)','flux(H)','flux(K)')
-		#Simbad.list_votable_fields()
-		customSimbad.remove_votable_fields( 'coordinates')
-		#Simbad.get_field_description('orv')
-		obj = customSimbad.query_object(name)
-		if obj is None:
-			raise ValueError('ERROR: {} target not found. Check target name or enter RA,Dec,PMRA,PMDec,Plx,RV,Epoch manually\n\n'.format(name))
-		else:
-			warning += ['{} queried from SIMBAD.'.format(name)]
-
-		# Check for masked values
-		if all([not x for x in [obj.mask[0][i] for i in obj.colnames]])==False:
-			warning += ['Masked values present in queried dataset']
-
-
-		obj = obj.filled(None)
-
-		pos = SkyCoord(ra=obj['RA_2_A_ICRS_J2000'],dec=obj['DEC_2_D_ICRS_J2000'],unit=(u.hourangle, u.deg))
-		ra = pos.ra.value[0]
-		dec = pos.dec.value[0]
-		pmra = obj['PMRA'][0]
-		pmdec = obj['PMDEC'][0]
-		plx = obj['PLX_VALUE'][0]
-		rv = obj['RV_VALUE'][0] * 1000 #SIMBAD output is in km/s. Converting to m/s
-		epoch = 2451545.0
-		sp_type = obj['SP_TYPE'][0]
-
-		star = {'ra':ra,'dec':dec,'pmra':pmra,'pmdec':pmdec,'px':plx,'rv':rv,'epoch':epoch, 'sp_type':sp_type,
-		'Umag':obj['FLUX_U'][0],'Bmag':obj['FLUX_B'][0],'Vmag':obj['FLUX_V'][0],'Rmag':obj['FLUX_R'][0],
-		'Imag':obj['FLUX_I'][0],'Jmag':obj['FLUX_J'][0],'Hmag':obj['FLUX_H'][0],'Kmag':obj['FLUX_K'][0]}
+		star, warning = _QuerySimbad(name)
 
 		star_simbad = star.copy()
 	if QueryTIC:
 		print('Querying TIC for {}'.format(name))
-		_d = Catalogs.query_object(name.replace(' ', '').replace('-', '').lower(), radius=2*u.arcsec, catalog="TIC").to_pandas()
+		_d = _QueryTIC(name)
 		if len(_d)==0:
 			print("Nothing found in TIC for {}".format(name))
 		else:
@@ -382,8 +425,7 @@ def get_stellar_data_and_mag(name='',
 	if QueryGaia:
 		from astroquery.gaia import Gaia
 
-		j = Gaia.cone_search_async(coord, 50*u.arcsec)
-		r = j.get_results()
+		r = _QueryGaia(coord, Radius=50)
 		star_output['pmra'] = r['pmra'][0]
 		star_output['pmdec'] = r['pmdec'][0]
 		print('Querying GAIA for {}'.format(name))
@@ -392,9 +434,7 @@ def get_stellar_data_and_mag(name='',
 	for i in [k for k in star_output if star_output[k]==1e20]:
 		star_output[i]=star_output
 
-
 	return star_output
-
 
 def wav_airtovac(la):
 	""" Converts air wavelength (Angstoms) to vaccum wavelength (Angstoms).
