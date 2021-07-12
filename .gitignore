@@ -1,0 +1,7 @@
+
+pyastrotools/__pycache__/*
+
+pyastrotools.egg-info/top_level.txt
+pyastrotools.egg-info/SOURCES.txt
+pyastrotools.egg-info/dependency_links.txt
+pyastrotools/NEA/nasa_archive_exoplanets.csv

@@ -489,9 +489,9 @@ def mdwarf_r_from_teff(st_teff,plot=False):
 		
 	"""
 	if np.any(st_teff>4200):
-		print("Warning {} elements with TEFF>4200K".format(np.sum(teff>4200)))
+		print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
 	if np.any(st_teff>2700):
-		print("Warning {} elements with TEFF<2700K".format(np.sum(teff<2700)))
+		print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
 	a = 10.5440
 	b = -33.7546
 	c = 35.1909
