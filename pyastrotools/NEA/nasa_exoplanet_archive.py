@@ -25,8 +25,8 @@ import pytz
 class NEA(object):
 	def __init__(self, DownloadPS=False):
 		"""
-		DownloadPS: If True, will download the entire Planetary Systems CSV, this includes multiple entries for each system. Set default_flag=1 to pick default.
-		If False, will download the Planetary Systems Composite Parameters, which consists of composite parameters from multiple sources.
+		DownloadPS: If True, will download the entire Planetary Systems CSV, this includes multiple rows for each system. Set default_flag=1 to pick default (larger csv).
+		If False, will download the Planetary Systems Composite Parameters, which consists of composite parameters from multiple sources for each planet (smaller csv).
 		
 		"""
 		# Download / Load the NASA Exoplanet Archive table and initialize
@@ -39,7 +39,7 @@ class NEA(object):
 		else:
 			url = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+pscomppars&format=csv"
 
-		_ = download_file_check_staleness(url=url, time_tolerance=10, save_file=save_file, file_name = 'NASA Exoplanet Archive')
+		_ = download_file_check_staleness(url=url, time_tolerance=14, save_file=save_file, file_name = 'NASA Exoplanet Archive')
 
 
 		## Read into Astropy Table ##

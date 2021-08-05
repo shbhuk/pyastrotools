@@ -3,6 +3,8 @@ import sys, os
 from scipy.optimize import least_squares, curve_fit
 from scipy.linalg import svd
 import datetime
+from scipy.integrate import simps
+from scipy.interpolate import UnivariateSpline
 
 
 def ispositive(i):
@@ -112,12 +114,12 @@ def download_file_check_staleness(url, time_tolerance, save_file, file_name):
 
 	# If archive file exists and is more than n days old, download newfile
 		if last_time<now-datetime.timedelta(days=time_tolerance):
-			print('Downloaded {}'.format(file_name))
+			print('Downloading {}'.format(file_name))
 			savefilefromurl(url, save_file)
 			check=True
 
 	else:
-		print('Downloaded {}'.format(file_name))
+		print('Downloading {}'.format(file_name))
 		savefilefromurl(url, save_file)
 		check=True
 	return check
@@ -143,3 +145,53 @@ def compactString(in_string):
 	Enter string, will remove space , '-' hyphen and lower the case.
 	'''
 	return in_string.replace(' ', '').replace('-', '').lower()		
+	
+
+def GeneralIntegration_Trap(f, x_min, x_max, nsteps, LonSpacing=False, LogSpacing=False):
+    """
+    INPUTS:
+        f = Function to be integrated
+        x_min = Lower Bound for variable to be integrated
+        x_max = Upper Bound for variable to be integrated
+        LogSpacing =  x interval in log10 space. Boolean. Default = False
+        LonSpacing =  x interval in loge space. Boolean. Defaut = False
+        nsteps = Number of steps to use
+
+    https://en.wikipedia.org/wiki/Trapezoidal_rule
+    
+    Written for Astro 530 : Stellar Atmospheres 2019
+
+    """
+    if LogSpacing:
+        logx_grid = np.linspace(np.log10(x_min), np.log10(x_max), nsteps)
+        logx_interval= (np.log10(x_max) - np.log10(x_min))/nsteps
+
+        f_x = f(10**logx_grid)*(10**logx_grid)
+
+        result = np.log(10)*(logx_interval/2) * (f_x[0] + 2*np.sum(f_x[1:-1])+ f_x[-1])
+
+    elif LonSpacing:
+        logx_grid = np.linspace(np.log(x_min), np.log(x_max), nsteps)
+        logx_interval= (np.log(x_max) - np.log(x_min))/nsteps
+
+        f_x = f(np.e**logx_grid)*(np.e**logx_grid)
+
+        result = (logx_interval/2) * (f_x[0] + 2*np.sum(f_x[1:-1])+ f_x[-1])
+
+    else:
+        x_grid = np.linspace(x_min, x_max, nsteps)
+        x_interval = (x_max - x_min)/nsteps
+
+        f_x = f(x_grid)
+
+        result = (x_interval/2) * (f_x[0] + 2*np.sum(f_x[1:-1])+ f_x[-1])
+
+    return result	
+    
+
+def NumericalIntegrate1D(xarray, Matrix, xlimits, UseSimps=False):
+	if UseSimps:
+		Integral = simps(Matrix, xarray)
+	else:
+		Integral = UnivariateSpline(xarray, Matrix).integral(xlimits[0], xlimits[1])
+	return Integral    
