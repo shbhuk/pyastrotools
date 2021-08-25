@@ -195,3 +195,38 @@ def NumericalIntegrate1D(xarray, Matrix, xlimits, UseSimps=False):
 	else:
 		Integral = UnivariateSpline(xarray, Matrix).integral(xlimits[0], xlimits[1])
 	return Integral    
+
+
+def MakeResidualPlots(x, ydata, ymodel, Title='', Xlabel='', Ylabel='', Ymodellabels=''):
+	"""
+	Make residual plot.
+	ydata can be a list of 1D arrays, in which case will plot each one separately. In such case, give names for each dataset in Ydatalabels
+	"""
+
+	colours = ['b', 'r', 'g', 'maroon']
+
+	NumY = np.ndim(ymodel)
+
+	fig, axes = plt.subplots(2, 1, sharex=True)
+
+	if np.ndim(ymodel) == 1:
+		print("Dim=1")
+		ymodel = [ymodel]
+		Ymodellabels = [Ymodellabels]
+
+	for i in range(NumY):
+		axes[0].plot(x, ymodel[i], color=colours[i], label=Ymodellabels[i])
+		R = np.sum((ydata - ymodel[i])**2)
+		axes[1].plot(x, ydata - ymodel[i], color=colours[i], label="SSE = {:.4e}".format(R) )
+	axes[0].plot(x, ydata, 'k', label='Data')
+
+	plt.xlabel(Xlabel)
+	axes[0].set_ylabel(Ylabel)
+	axes[1].set_ylabel('Residuals')
+	axes[0].set_title(Title)
+	axes[0].legend()
+	axes[1].legend()
+	fig.subplots_adjust(hspace=0.02)
+	# plt.show(block=False)
+	
+	return fig

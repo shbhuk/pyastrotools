@@ -36,7 +36,6 @@ from astropy import units as u
 from scipy import stats
 from scipy.interpolate import interp1d
 import astropy
-from astropy.modeling.blackbody import blackbody_lambda, blackbody_nu
 import warnings
 from astropy.utils.exceptions import AstropyDeprecationWarning
 import matplotlib.pyplot as plt
