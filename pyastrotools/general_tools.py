@@ -230,3 +230,48 @@ def MakeResidualPlots(x, ydata, ymodel, Title='', Xlabel='', Ylabel='', Ymodella
 	# plt.show(block=False)
 	
 	return fig
+
+
+def SigmaDifferenceFunction(x, dx, y, dy):
+	"""
+	Calculate the sigma in f, where f = x-y, and dx and dy are the standard deviations
+	Return f, df, where df is the standard deviation
+	"""
+
+	return (x-y), np.sqrt(dx**2 + dy**2)
+
+def SigmaRatioFunction(x, dx, y, dy):
+	"""
+	Calculate the sigma in f, where f = x/y, and dx and dy are the standard deviations
+	Return f, df, where df is the standard deviation
+	"""
+
+	f = x/y
+	df = np.sqrt((((dx/x)**2) + ((dy/y)**2))*f*f)
+
+	return f, df
+
+def SigmaLog(x, dx):
+	"Calculate  dy, where y = log(x)"
+	
+	return dx/x
+	
+def SigmaAntiLog(y, dy):
+	"Calculate  dx, where y = log(x)"
+	
+	x = np.exp(y)
+		
+	return dy*x
+	
+def SigmaLog10(x, dx):
+	"Calculate  dy, where y = log10(x)"
+	
+	return dx/(x*np.log(10))
+	
+
+def SigmaAntiLog10(y, dy):
+	"Calculate  dy, where y = log10(x)"
+	
+	x = 10**y
+	
+	return dy * x * np.log(10)
