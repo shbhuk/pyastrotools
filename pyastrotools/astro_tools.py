@@ -157,11 +157,16 @@ def ra_dec_difference(delta_1,delta_2,alpha_1,theta):
 
 
 def abs_to_app(d,M=5):
+	"""
+	d is the distance in parsec
+	M is the Absolute magnitude
+	"""
 	return M+2.5*math.log10((d/10)**2)
 
 def app_to_abs(d,m):
 	'''
 	d is in pc
+	m : Apparent magnitude
 	'''
 	return m-5*np.log10(d)+5
 
@@ -536,6 +541,19 @@ def mdwarf_teff_from_r(st_rad,plot=False):
 		ax.plot(teffs,st_rad,'k.')
 	return teffs
 
+def Mann2015_mdwarf_r_from_ks(AbsK):
+	"""
+	Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
+	Typical scatter in radius is ~20%
+	"""
+	
+	a = 1.9515
+	b = -0.3520
+	c = 0.01680
+	
+	radius = a + b*AbsK + c*(AbsK**2)
+	return radius
+	
 
 def fgk_teff_from_mr_feh(st_mass, st_rad, FeH=0):
 	"""
