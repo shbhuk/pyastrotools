@@ -950,6 +950,7 @@ def fgk_hpfneid_observability(pl_rade, Vmag, Jmag, pl_orbper, st_mass,
 def NoObservations(KoverSigma, SNR):
 	'''
 	Plavchan 2015, what are the number of observations required for a given SNR for K/sigma
+	Eqn 4.2.5
 	
 		
 	from pyastrotools.observing_tools
