@@ -29,18 +29,19 @@
 '''
 
 import numpy as np
-from astropy.io import fits
 import math, os
-from astropy import constants as ac
-from astropy import units as u
 from scipy import stats
 from scipy.interpolate import interp1d, griddata
-import astropy
 import warnings
-from astropy.utils.exceptions import AstropyDeprecationWarning
+import pandas as pd
 import matplotlib.pyplot as plt
 from uncertainties.umath import *
 
+import astropy
+from astropy.io import fits
+from astropy import constants as ac
+from astropy import units as u
+from astropy.utils.exceptions import AstropyDeprecationWarning
 import astropy.units as u
 from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
@@ -853,7 +854,7 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 							  xi=(xx1, yy1, zz1),
 								 method='linear')
 
-	CoreMass = interp1d(GD1[:,0,0], ynew)(QueryRadius)
+	CoreMass = interp1d(GD1[:,0,0], ynew, fill_value=(np.nan, 0), bounds_error=False)(QueryRadius)
 
 	if Plot:
 		plt.plot(ynew, GD1[:,0,0], label="Interpolated value")
