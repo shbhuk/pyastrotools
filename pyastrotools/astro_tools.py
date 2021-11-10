@@ -30,11 +30,11 @@
 
 import numpy as np
 from astropy.io import fits
-import math
+import math, os
 from astropy import constants as ac
 from astropy import units as u
 from scipy import stats
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, griddata
 import astropy
 import warnings
 from astropy.utils.exceptions import AstropyDeprecationWarning
@@ -48,6 +48,8 @@ from astroquery.mast import Catalogs
 
 
 c = ac.c.value #[m/s]
+
+CodeDir = os.path.dirname(os.path.abspath(__file__))
 
 
 
@@ -305,7 +307,7 @@ def change_spectral_bin(wavelength=None, nu=None, dnu=None, dlambda = None):
 
 
 
-def _QuerySimbad(Name):
+def _QuerySimbad(Name, ReturnAll=False):
 	'''
 	Function to query Simbad for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
 	INPUTS:
@@ -319,7 +321,7 @@ def _QuerySimbad(Name):
 
 	customSimbad = Simbad()
 	customSimbad.add_votable_fields('ra(2;A;ICRS;J2000)', 'dec(2;D;ICRS;J2000)','pm', 'plx','parallax','rv_value', 'sptype',
-	'flux(U)','flux(B)','flux(V)','flux(R)','flux(I)','flux(J)','flux(H)','flux(K)')
+	'flux(U)','flux(B)','flux(V)','flux(R)','flux(I)','flux(J)','flux(H)','flux(K)', 'ids')
 	#Simbad.list_votable_fields()
 	customSimbad.remove_votable_fields( 'coordinates')
 	#Simbad.get_field_description('orv')
@@ -350,7 +352,10 @@ def _QuerySimbad(Name):
 	'Umag':obj['FLUX_U'][0],'Bmag':obj['FLUX_B'][0],'Vmag':obj['FLUX_V'][0],'Rmag':obj['FLUX_R'][0],
 	'Imag':obj['FLUX_I'][0],'Jmag':obj['FLUX_J'][0],'Hmag':obj['FLUX_H'][0],'Kmag':obj['FLUX_K'][0]}
 
-	return star,warning
+	if ReturnAll:
+		return star, warning, obj
+	else:
+		return star,warning
 
 
 def _QueryTIC(Name, Radius=2):
@@ -784,3 +789,77 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 	TSM = scale * (((pl_rade**3)*pl_eqt)/(pl_masse*st_rad*st_rad)) * 10**(-st_j/5)
 
 	return TSM
+
+
+def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, Plot=False):
+	"""
+	QueryMass: Total planetary mass (Earth mass)
+	QueryRadiusE: Total planetary radius (Earth radius)
+	QueryEqT: Equilibrium temperature for planet (K): [Has to lie between 78 K, 1960 K]
+	QueryAge: In Gyr. Fortney 2007 options are 0.3 Gyr, 1 Gyr, 4.5 Gyr. Will find the one closest
+	"""
+		
+	"""
+	Table 2 = Giant planet radii at 300 Myr
+	Table 3 = Giant planet radii at 1 Gyr
+	Table 4 = Giant planet radii at 4.5 Gyr
+	"""
+
+	AgeArray = np.array([0.3, 1, 4.5])
+	AgeIndex = np.argmin(np.abs(AgeArray-QueryAge))
+	TablePath = os.path.join(os.path.dirname(CodeDir), 'Data', 'Fortney2007_Tab{}.txt'.format(int(AgeIndex+2)))
+
+	Rjup2Rearth = 11.208
+	QueryRadius = QueryRadiusE / Rjup2Rearth
+
+	#https://ui.adsabs.harvard.edu/abs/2007ApJ...659.1661F/abstract
+	# Grid axes from Fortney 2007
+	pl_coremasse = np.array([0, 10, 25, 50, 100])
+	pl_totalmasse = np.array([17, 28, 46, 77, 129, 215, 318, 464, 774, 1292, 2154, 3594])
+	pl_orbsmax = np.array([0.02, 0.045, 0.1, 1.0, 9.5])
+	pl_eqt = np.array([1960, 1300, 875, 260, 78])
+
+
+	# Open Table and reshape it into 3D array
+	df = pd.read_csv(TablePath, delimiter='\t', skiprows=1).replace('-', np.nan)
+	tarray = np.array(df.iloc[:,2:]).astype(float)
+	t3d = np.reshape(tarray, (5, 5, 12))
+	# df.iloc[:,2:]
+
+	x = pl_totalmasse
+	y = pl_coremasse
+	z = pl_eqt
+
+	# Maskout nans and form mesh grid
+	array = np.ma.masked_invalid(t3d)
+	xx, yy, zz = np.meshgrid(x, y, z)
+	xx = xx.swapaxes(0,1).T
+	yy = yy.swapaxes(0,1).T
+	zz = zz.swapaxes(0,1).T
+
+	xnew = QueryMass
+	ynew = np.arange(0, 100)
+	znew = QueryEqT
+	np.shape(zz)
+	xx1, yy1, zz1 = np.meshgrid(xnew, ynew, znew)
+	x1 = xx[~array.mask]
+	y1 = yy[~array.mask]
+	z1 = zz[~array.mask]
+	newarr = array[~array.mask]
+
+	# Interpolate onto grid at known planet mass and EqT with range of core masses
+	# GD1 is the pl_radj as a function of core mass
+	GD1 = griddata(points=(x1, y1, z1), values=newarr.ravel(),
+							  xi=(xx1, yy1, zz1),
+								 method='linear')
+
+	CoreMass = interp1d(GD1[:,0,0], ynew)(QueryRadius)
+
+	if Plot:
+		plt.plot(ynew, GD1[:,0,0], label="Interpolated value")
+		plt.xlabel("Core Mass $(M_{\oplus}$)")
+		plt.ylabel("Planet Radius $(R_J$)")
+		plt.axhline(QueryRadius, color='k', linestyle='dashed', label="Input planetary radius")
+		plt.legend()
+		
+	return CoreMass
