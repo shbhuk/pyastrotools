@@ -643,14 +643,14 @@ def obs_planning_transit(pl_name, RA, Dec,
 			ax1.grid(False); ax2.grid(False)
 
 			ing_er_plot, = plt.plot(((ingress_er.jd - midnight.jd)*24)*u.hour, tmp_C[ing_er_pos].alt, marker=(3,0,-np.abs(slope_in_err)),
-							color='lime', markersize = 10, label='Ingress w/ uncert. = {}'.format(ingress_er.iso[:-4]))
+							color='lime', markersize = 10, label='Ingress  + 1$\sigma$ = {}'.format(ingress_er.iso[:-4]))
 			ing_plot, = plt.plot(((ingress.jd - midnight.jd)*24)*u.hour, tmp_C[ing_pos].alt, marker=(3,0,-np.abs(slope_in)), color='r', markersize = 10, label='Ingress = {}'.format(ingress.iso[:-4]))
 			eg_plot, = plt.plot(((egress.jd - midnight.jd)*24)*u.hour,  tmp_C[egr_pos].alt, marker=(3,0,np.abs(slope_eg)), color='r', markersize = 10, label='Egress = {}'.format(egress.iso[:-4]))
 			eng_er_plot, = plt.plot(((egress_er.jd - midnight.jd)*24)*u.hour, tmp_C[egr_er_pos].alt, marker=(3,0, np.abs(slope_eg_err)),
-							color='lime', markersize = 10, label='Egress w/ uncert. = {}'.format(egress_er.iso[:-4]))
+							color='lime', markersize = 10, label='Egress + 1$\sigma$ = {}'.format(egress_er.iso[:-4]))
 			mid_plot, = plt.plot(((midpoint.jd - midnight.jd)*24)*u.hour,tmp_C[mid_pos].alt, marker='o', color='r', markersize = 10, label='Midpoint = {}'.format(midpoint.iso[:-4]))
 
-			plt.scatter(delta_midnight.value, targetaltaz_obsnight.alt, c = targetaltaz_obsnight.az, s = 15, marker = '.', cmap = 'viridis')
+			plt.scatter(delta_midnight.value, targetaltaz_obsnight.alt, c = targetaltaz_obsnight.az.value, s = 15, marker = '.', cmap = 'viridis')
 
 			sun_altaz = get_sun(times_obs).transform_to(frame_obsnight)
 			moon_obj = get_moon(times_obs)
@@ -668,8 +668,8 @@ def obs_planning_transit(pl_name, RA, Dec,
 			plt.text(-7, 49, 'Airmass 1.5', size=15)
 			plt.hlines(30, *xboundary, 'r', 'dashed')
 			plt.text(-7, 31, 'Airmass 2', size=15)
-			legend1 = plt.legend(handles=[sun_plot, moon_plot], loc='upper left')
-			legend2 = plt.legend(handles=[ mid_plot, ing_plot, eg_plot, ing_er_plot, eng_er_plot], loc='lower left', prop={'size':12})
+			legend1 = plt.legend(handles=[sun_plot, moon_plot], loc='upper right')
+			legend2 = plt.legend(handles=[ mid_plot, ing_plot, eg_plot, ing_er_plot, eng_er_plot], loc='lower right', prop={'size':11})
 
 			plt.gca().add_artist(legend1)
 			plt.gca().add_artist(legend2)
