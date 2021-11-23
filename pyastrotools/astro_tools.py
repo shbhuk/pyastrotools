@@ -25,7 +25,10 @@
 24.calculate_orbvelocity - Calculate orbital velocity from period, or vice versa.
 25.calculate_orbperiod - Calculate orbital period given primary stellar mass and semi major axis
 26.calculate_eqtemperature = Calculate equilibrium temperature
-267.calculate_TSM - Calculate the transmission spectroscopy metric from Kempton 2018
+27.calculate_TSM - Calculate the transmission spectroscopy metric from Kempton 2018
+28. CalculateScaleHeight - Calculate planetary scale height 
+29. CalculateSurfaceGravity - Calculate surface gravity for a given M and R
+30. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
 '''
 
 import numpy as np
@@ -36,6 +39,8 @@ import warnings
 import pandas as pd
 import matplotlib.pyplot as plt
 from uncertainties.umath import *
+from uncertainties import ufloat
+
 
 import astropy
 from astropy.io import fits
@@ -755,6 +760,8 @@ def calculate_eqtemperature(st_rad, st_teff, pl_orbsmax, st_raderr1=0.0, st_teff
 	return st_teff * ((st_rad/pl_orbsmax/2)**(1/2))
 
 
+
+
 def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_eqterr1=0.0, pl_masseerr1=0.0, st_raderr1=0.0):
 	"""
 	Calculate Transmission Spectroscopy Metric (TSM) from Kempton 2018 (for JWST)
@@ -782,7 +789,7 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 		scale = 1.15
 
 	from uncertainties import ufloat
-	pl_rade = ufloat(pl_rade, st_raderr1)
+	pl_rade = ufloat(pl_rade, pl_radeerr1)
 	pl_eqt = ufloat(pl_eqt, pl_eqterr1)
 	pl_masse = ufloat(pl_masse, pl_masseerr1)
 	st_rad = ufloat(st_rad, st_raderr1)
@@ -791,6 +798,67 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 
 	return TSM
 
+def CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=0.0, pl_radeerr1=0.0):
+	"""
+	Calculate the surface gravity for given planetary mass and radius
+	
+	INPUTS:
+		
+		pl_masse : Planetary mass (Earth masses)
+		pl_rade : Planetary radius (Earth radii)
+		pl_masseerr1: Planetary mass 1 sigma error (Earth masses): Default = 0
+		pl_radeerr1: Planetary radius 1 sigma error (Earth radius): Default = 0
+	
+	OUTPUTS:
+		g: Surface gravity (cm/s2)
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 23rd Nov 2021
+	
+	"""
+	
+	pl_rade = (pl_rade*u.R_earth).to(u.cm).value
+	pl_radeerr1 = (pl_radeerr1*u.R_earth).to(u.cm).value
+	pl_masse = (pl_masse*u.M_earth).to(u.g).value
+	pl_masseerr1 = (pl_masseerr1*u.M_earth).to(u.g).value
+
+	pl_rade = ufloat(pl_rade, pl_radeerr1)
+	pl_masse = ufloat(pl_masse, pl_masseerr1)
+	
+	g = ac.G.cgs.value * pl_masse / (pl_rade**2)
+	
+	return g
+
+def CalculateScaleHeight(pl_masse, pl_rade, pl_eqt, pl_masseerr1=0.0, pl_radeerr1=0.0, pl_eqterr1=0.0):
+	"""
+	Calcualte the planetary scale height
+	
+	INPUTS:
+		pl_masse : Planetary mass (Earth masses)
+		pl_rade : Planetary radius (Earth radii)
+		pl_eqt: Planetary equilibrium temperature (K)
+		pl_masseerr1: Planetary mass 1 sigma error (Earth masses): Default = 0
+		pl_radeerr1: Planetary radius 1 sigma error (Earth radius): Default = 0
+		pl_eqterr1: Planetary equilibrium temperature 1 sigma error (K): Default = 0
+	
+	OUTPUTS:
+		H: Scale Height (km)
+	
+	from pyastrotools.astro_tools
+	Shubham Kanodia 23rd Nov 2021
+	"""
+	
+	g = CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=pl_masseerr1, pl_radeerr1=pl_radeerr1)
+	
+	surfacegravity = g/100 # Convert cm/s2 to m/s2
+	eqt = ufloat(pl_eqt, pl_eqterr1) # Kelvin
+	
+	
+	# Using the mean molecular weight to be 2.2 x m_p for hydrogen molecule
+	H = ac.k_B.value * eqt / (ac.m_p.value  * 2.2 * surfacegravity)
+	
+	return H/1000
+	
 
 def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, Plot=False):
 	"""
@@ -804,6 +872,9 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 	Table 2 = Giant planet radii at 300 Myr
 	Table 3 = Giant planet radii at 1 Gyr
 	Table 4 = Giant planet radii at 4.5 Gyr
+	
+	from pyastrotools.astro_tools
+	Shubham Kanodia 23rd Nov 2021
 	"""
 
 	AgeArray = np.array([0.3, 1, 4.5])
