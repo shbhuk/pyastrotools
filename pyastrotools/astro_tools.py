@@ -29,6 +29,8 @@
 28. CalculateScaleHeight - Calculate planetary scale height 
 29. CalculateSurfaceGravity - Calculate surface gravity for a given M and R
 30. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
+31. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
+32. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
 '''
 
 import numpy as np
@@ -935,3 +937,74 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 		plt.legend()
 		
 	return CoreMass
+
+def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_orbsmax, pl_orbeccen, Qplanet, Qstar=1e7):
+	"""
+	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
+	Equations have been lifted from Caleb's paper (Canas et al. 2021) for TOI-2119
+	
+	INPUTS:
+		st_mass: Stellar mass in sol mass 
+		st_rad: Stellar radii in sol radii
+		pl_masse: Planetary mass in earth mass
+		pl_rade: Planetary radii in earth radii
+		pl_orbeccen: Current planetary eccentricity
+		pl_orbsmax: Semi Major axis in AU
+		Qplanet: Tidal Quality factor for planet
+		Qstar: Tidal Quality factor for planet
+		
+	OUTPUTS:
+		tau_e : Circularization timescale (yrs)
+		tau_a :  Inspiral timescale (yrs)
+	"""
+	
+	st_mass = st_mass * u.M_sun
+	st_rad = st_rad * u.R_sun
+	pl_rade = pl_rade * u.R_earth
+	pl_masse = pl_masse * u.M_earth
+	pl_orbsmax = pl_orbsmax * u.au
+	
+		
+	invtau_a_star = ( pl_orbsmax**(-13/2) * (9/2) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr)
+	invtau_a_planet = ( pl_orbsmax**(-13/2) * (63/2) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5) * (pl_orbeccen**2) / pl_masse  / Qplanet)).to(1/u.yr)
+	tau_a = 1/(invtau_a_star + invtau_a_planet)
+
+
+	invtau_e_star = ( pl_orbsmax**(-13/2) * (171/16) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr)
+	invtau_e_planet = ( pl_orbsmax**(-13/2) * (63/4) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5)  / pl_masse  / Qplanet)).to(1/u.yr)
+	tau_e = 1/(invtau_e_star + invtau_e_planet)
+	
+	return tau_e, tau_a
+	
+
+def CalculateCircTimescales_GoldreichSoter1966(pl_masse, pl_rade, st_mass, pl_orbsmax, Q):
+	"""
+	Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
+	Equation lifted from Waalkes et al. (2021) paper
+	
+	INPUTS:
+		pl_masse: Planetary mass in earth mass
+		pl_rade: Planetary radii in earth radii
+		st_mass: Stellar mass in sol mass 
+		pl_orbsmax: Semi Major axis in AU
+		Q: Friction coefficient (Q_jup = 1e5, Q_saturn = 0.6e5, Q_uranus = 0.72e4, 
+			Q_earth=13, Q_venus = 17, Q_mars = 26, Q_mercury = 190)
+
+		
+	OUTPUTS:
+		tau_circ : Circularization timescale (yrs)
+	
+	"""
+	
+	pl_orbper = calculate_orbperiod(st_mass, pl_orbsmax)
+	
+	st_mass = st_mass * u.M_sun
+	pl_rade = pl_rade * u.R_earth
+	pl_masse = pl_masse * u.M_earth
+	pl_orbper = pl_orbper * u.yr
+	pl_orbsmax = pl_orbsmax * u.au
+	
+	tau_circ = ((2*Q/(63*np.pi)) * pl_orbper * (pl_masse/st_mass) * ((pl_orbsmax/pl_rade)**5)).to(u.yr)
+	
+	return tau_circ
+
