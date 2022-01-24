@@ -1,4 +1,5 @@
 '''
+Basic Astronomy functions - 
 1. deg_to_rad() - Convert degree to radians
 2. rad_to_deg() - Convert radians to degrees
 3. dec_to_time() - Convert decimal to sexagesimal
@@ -8,29 +9,45 @@
 7. ra_dec_difference - Distance between two RA,Dec coordinates
 8. abs_to_app - Convert absolute magnitude to apparent magnitude
 9. app_to_abs - Convert apparent magnitude to absolute magnitude
-10.rv_magnitude - Calculate RV signal using Semi major axis
-11.rv_magnitude_period - Calculate RV signal using Period
-12.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
-13.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
-14.change_spectral_bin - Change dnu to dlambda or vice versa
-15.get_stellar_data_and_mag
-16.wav_airtovac - Convert wavelength air to vacuum
-17.wav_vactoair - Convert wavelength vacuum to air
-18.mdwarf_r_from_teff - Calculate Mdwarf radius from Teff
-19.mdwarf_teff_from_r - Calculate Mdwarf Teff from radius
-20.fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
-21.calculate_stellar_luminosity - Calculate Stellar luminosity from Radius and Temperature
-22.calculate_insolation_flux - Calculate insolation flux on a planet
-23.calculate_semi_major_axis - Calculate semi major axis for planet
-24.calculate_orbvelocity - Calculate orbital velocity from period, or vice versa.
-25.calculate_orbperiod - Calculate orbital period given primary stellar mass and semi major axis
-26.calculate_eqtemperature = Calculate equilibrium temperature
-27.calculate_TSM - Calculate the transmission spectroscopy metric from Kempton 2018
-28. CalculateScaleHeight - Calculate planetary scale height 
-29. CalculateSurfaceGravity - Calculate surface gravity for a given M and R
-30. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
-31. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
-32. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
+
+RV calculation functions - 
+1. rv_magnitude - Calculate RV signal using Semi major axis
+2.rv_magnitude_period - Calculate RV signal using Period
+3.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
+4.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
+
+Spectral utilities - 
+1. change_spectral_bin - Change dnu to dlambda or vice versa
+2. wav_airtovac - Convert wavelength air to vacuum
+3. wav_vactoair - Convert wavelength vacuum to air
+
+Stellar parameter scaling relations - 
+1. Mann2015_mdwarf_r_from_ks(AbsK) - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
+2. mdwarf_r_from_teff - Calculate Mdwarf radius from Teff
+3. mdwarf_teff_from_r - Calculate Mdwarf Teff from radius
+4. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
+5. PhotometricMetallicity_Bonfils2005 - Use the photometric relation (Eqn 1) from Bonfils et al. 2005 to calculate metallicity
+6. PhotometricMetallicity_JohnsonApps2009 - Use the photometric relation from Johnson and Apps 2009 to calculate metallicity
+7. PhotometricMetallicity_SchlaufmanLaughlin2010 - Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
+8. PhotometricMetallicity_Neves2012 - Use Eqn 3 from Neves et al. 2012 to calculate the metallicity for M dwarfs
+
+General Functions - 
+1. get_stellar_data_and_mag - 	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
+
+Exoplanet specific functions - 
+1. calculate_stellar_luminosity - Calculate Stellar luminosity from Radius and Temperature
+2. calculate_insolation_flux - Calculate insolation flux on a planet
+3. calculate_semi_major_axis - Calculate semi major axis for planet
+4. calculate_orbvelocity - Calculate orbital velocity from period, or vice versa.
+5. calculate_orbperiod - Calculate orbital period given primary stellar mass and semi major axis
+6. calculate_eqtemperature = Calculate equilibrium temperature
+7. calculate_TSM - Calculate the transmission spectroscopy metric from Kempton 2018
+8. CalculateScaleHeight - Calculate planetary scale height 
+9. CalculateSurfaceGravity - Calculate surface gravity for a given M and R
+10. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
+11. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
+12. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
+13. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
 '''
 
 import numpy as np
@@ -397,7 +414,7 @@ def get_stellar_data_and_mag(name='',
 					RA=None, Dec=None, PMRA=None, PMDec=None,PMEpoch = 2015.5, Equinox=2000.0, Vmag=None, Jmag=None,
 					QueryTIC=True, QueryGaia=True, QuerySimbad=True):
 	'''
-	Function to query Simbad for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
+	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
 	INPUTS:
 		name = Name of source. Example
 
@@ -567,6 +584,108 @@ def Mann2015_mdwarf_r_from_ks(AbsK):
 	radius = a + b*AbsK + c*(AbsK**2)
 	return radius
 	
+def PhotometricMetallicity_Bonfils2005(V, K, MK):
+	"""
+	Use Eqn 1 from Bonfils et al. 2005 to calculate the metallicity for M dwarfs
+	
+	INPUTS:
+		V: V mag (apparent)
+		K: K mag (apparent)
+		MK: Absolute K mag
+	OUTPUTS:
+		Fe/H: Metallicity
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 24th Jan 2022
+	"""
+	
+	FeH = 0.196 - 1.527*MK + 0.091*(MK**2) + 1.886*(V-K) - 0.142*((V-K)**2)
+	
+	return FeH
+
+
+def PhotometricMetallicity_JohnsonApps2009(V, K, MK):
+	"""
+	Use Eqn 1 from Johnson and Apps et al. 2009 to calculate the metallicity for M dwarfs
+	
+	INPUTS:
+		V: V mag (apparent)
+		K: K mag (apparent)
+		MK: Absolute K mag
+	OUTPUTS:
+		Fe/H: Metallicity
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 24th Jan 2022
+		
+	"""
+	
+	x = (V-K)
+	# Coefficients from Section 2 of the paper
+	Coeff = [-9.58933, 17.3952,-8.88365, 2.22598, -0.258854, 0.0113399]
+	IsoMetallicityContour = 0
+	for i in range(len(Coeff)): IsoMetallicityContour+= ((x**i)*Coeff[i])
+	
+	FeH = 0.56 * (IsoMetallicityContour-MK) - 0.05
+	
+	return FeH
+
+
+def PhotometricMetallicity_SchlaufmanLaughlin2010(V, K, MK):
+	"""
+	Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
+	
+	INPUTS:
+		V: V mag (apparent)
+		K: K mag (apparent)
+		MK: Absolute K mag
+	OUTPUTS:
+		Fe/H: Metallicity
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 24th Jan 2022
+	"""
+	
+	x = MK
+	# Coefficients from Section 2 of the paper
+	Coeff = [51.1413, -39.3756, 12.2862, -1.83916, 0.134266, -0.00382023]
+	V_K_Iso = 0
+	for i in range(len(Coeff)): V_K_Iso+= ((x**i)*Coeff[i])
+	
+	Delta = V - K - V_K_Iso
+	
+	FeH = 0.79 * Delta - 0.17
+	
+	return FeH
+
+
+def PhotometricMetallicity_Neves2012(V, K, MK):
+	"""
+	Use Eqn 1 from Neves et al. 2010 to calculate the metallicity for M dwarfs
+	
+	INPUTS:
+		V: V mag (apparent)
+		K: K mag (apparent)
+		MK: Absolute K mag
+	OUTPUTS:
+		Fe/H: Metallicity
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 24th Jan 2022
+	"""
+	
+	x = MK
+	# Coefficients from Section 2 of the paper
+	Coeff = [51.1413, -39.3756, 12.2862, -1.83916, 0.134266, -0.00382023]
+	V_K_Iso = 0
+	for i in range(len(Coeff)): V_K_Iso+= ((x**i)*Coeff[i])
+	
+	Delta = V - K - V_K_Iso
+	
+	FeH = 0.57 * Delta - 0.17
+	
+	return FeH
+
 
 def fgk_teff_from_mr_feh(st_mass, st_rad, FeH=0):
 	"""
@@ -688,7 +807,7 @@ def calculate_semi_major_axis(st_mass, pl_orbper, st_masserr1=0.0, pl_orbpererr1
 
 def calculate_orbvelocity(st_mass, pl_orbper=None, pl_orbsmax=None):
 	"""
-	Calculate
+	Calculate orbital period (years), semi-major axis (AU) and orbital velocity for planet
 	INPUTS:
 		st_mass = Stellar Mass in solar masses
 		pl_orbper = Orbital period in years
@@ -711,7 +830,7 @@ def calculate_orbvelocity(st_mass, pl_orbper=None, pl_orbsmax=None):
 
 	pl_orbvel = np.sqrt(ac.G*st_mass/(pl_orbsmax)).to(u.km/u.s)
 
-	return {pl_orbper, pl_orbsmax, pl_orbvel}
+	return pl_orbper, pl_orbsmax, pl_orbvel
 
 
 
@@ -956,6 +1075,9 @@ def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_o
 	OUTPUTS:
 		tau_e : Circularization timescale (yrs)
 		tau_a :  Inspiral timescale (yrs)
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 23rd Nov 2021
 	"""
 	
 	st_mass = st_mass * u.M_sun
@@ -965,13 +1087,13 @@ def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_o
 	pl_orbsmax = pl_orbsmax * u.au
 	
 		
-	invtau_a_star = ( pl_orbsmax**(-13/2) * (9/2) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr)
-	invtau_a_planet = ( pl_orbsmax**(-13/2) * (63/2) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5) * (pl_orbeccen**2) / pl_masse  / Qplanet)).to(1/u.yr)
+	invtau_a_star = ( pl_orbsmax**(-13/2) * (9/2) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr) # Deform star by planet
+	invtau_a_planet = ( pl_orbsmax**(-13/2) * (63/2) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5) * (pl_orbeccen**2) / pl_masse  / Qplanet)).to(1/u.yr) # Deform planet by star
 	tau_a = 1/(invtau_a_star + invtau_a_planet)
 
 
-	invtau_e_star = ( pl_orbsmax**(-13/2) * (171/16) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr)
-	invtau_e_planet = ( pl_orbsmax**(-13/2) * (63/4) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5)  / pl_masse  / Qplanet)).to(1/u.yr)
+	invtau_e_star = ( pl_orbsmax**(-13/2) * (171/16) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr) # Deform star by planet
+	invtau_e_planet = ( pl_orbsmax**(-13/2) * (63/4) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5)  / pl_masse  / Qplanet)).to(1/u.yr) # Deform planet by star
 	tau_e = 1/(invtau_e_star + invtau_e_planet)
 	
 	return tau_e, tau_a
@@ -994,6 +1116,8 @@ def CalculateCircTimescales_GoldreichSoter1966(pl_masse, pl_rade, st_mass, pl_or
 	OUTPUTS:
 		tau_circ : Circularization timescale (yrs)
 	
+	from pyastrotools.astro_tools
+	Shubham Kanodia 23rd Nov 2021
 	"""
 	
 	pl_orbper = calculate_orbperiod(st_mass, pl_orbsmax)
@@ -1008,3 +1132,34 @@ def CalculateCircTimescales_GoldreichSoter1966(pl_masse, pl_rade, st_mass, pl_or
 	
 	return tau_circ
 
+def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
+	"""
+	Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
+	
+	INPUTS:
+		Prot: Rotation period in days
+		ProtError: Rotation period error in days
+		EarlyType: True: If Spectral Type is M0 or M1, if M2 or later, then False
+	OUTPUTS:
+		Age: Nominal Age (Gyr)
+		Age_Sigma: (Gyr)
+	
+	from pyastrotools.astro_tools
+	Shubham Kanodia 15th January 2022
+	"""
+	
+	Prot = ufloat(Prot, ProtError)
+	
+	if EarlyType:
+		y0 = ufloat(0.365, 0.431)
+		a = ufloat(0.019, 0.018)
+		b = ufloat(1.457, 0.214)
+	else:
+		y0 = ufloat(0.012, 0.221)
+		a = ufloat(0.061, 0.002)
+		b = ufloat(1.0, 0.0)
+		
+	Age = y0 + a*(Prot**b)
+	
+	return Age.n, Age.s
+		
