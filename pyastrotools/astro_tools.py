@@ -411,7 +411,7 @@ def _QueryGaia(coord, Radius=20):
 
 
 def get_stellar_data_and_mag(name='',
-					RA=None, Dec=None, PMRA=None, PMDec=None,PMEpoch = 2015.5, Equinox=2000.0, Vmag=None, Jmag=None,
+					RA=None, Dec=None, PMRA=None, PMDec=None,PMEpoch = 2015.5, Plx=None, Equinox=2000.0, Vmag=None, Jmag=None,
 					QueryTIC=True, QueryGaia=True, QuerySimbad=True):
 	'''
 	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
@@ -419,13 +419,14 @@ def get_stellar_data_and_mag(name='',
 		name = Name of source. Example
 
 	from pyastrotools.astro_tools
-	Shubham Kanodia 27th April 2021
+	Shubham Kanodia 24th February 2022
 
 	'''
 	warning = []
 
-	star_input = {'ra':RA,'dec':Dec,'pmra':PMRA,'pmdec':PMDec,'PMEpoch':PMEpoch, 'Equinox':Equinox, 'Vmag': Vmag, 'Jmag':Jmag, 'rv':None, 'sp_type':None,
-	'Umag':None,'Bmag':None,'Rmag':None,'Imag':None,'Hmag':None,'Kmag':None}
+	star_input = {'ra':RA,'dec':Dec,'pmra':PMRA,'pmdec':PMDec,'PMEpoch':PMEpoch, 'px':Plx, 'Equinox':Equinox, 'Vmag': Vmag, 'Jmag':Jmag, 'rv':None, 'sp_type':None,
+	'Umag':None,'Bmag':None, 'Vmag':None,'Rmag':None,'Imag':None,'Jmag':None, 'Hmag':None,'Kmag':None}
+	
 	star_simbad = {}
 	star_tic = {}
 
@@ -443,9 +444,15 @@ def get_stellar_data_and_mag(name='',
 			star_tic['dec'] = _d.dec[0]
 			star_tic['pmra'] = _d['pmRA'][0]
 			star_tic['pmdec'] = _d['pmDEC'][0]
-			star_tic['Vmag'] = _d['Vmag'][0]
-			star_tic['Jmag'] = _d['Jmag'][0]
+			star_tic['Umag'] = _d['umag'][0]
 			star_tic['Bmag'] = _d['Bmag'][0]
+			star_tic['Vmag'] = _d['Vmag'][0]
+			star_tic['Rmag'] = _d['rmag'][0]
+			star_tic['Imag'] = _d['imag'][0]
+			star_tic['Jmag'] = _d['Jmag'][0]
+			star_tic['Hmag'] = _d['Hmag'][0]
+			star_tic['Kmag'] = _d['Kmag'][0]
+			star_tic['px'] = _d['plx'][0]
 
 		star_output = star_tic.copy()
 	else:
