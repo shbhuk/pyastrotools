@@ -80,8 +80,14 @@ def find_observatory(obstime, obsname, lat=0., longi=0., alt=0., timezone=None):
 
 	obstime - Astropy Time object
 	'''
-	location = find_location(obsname, lat, longi, alt)
-	utcoffset, timezone = find_utc_offset(location, obstime, timezone=timezone)
+	if obsname == 'DOT': # Devasthal Optical Telescope 3.6 m Nainital, India
+		location = find_location(None, lat, longi, alt)
+		utcoffset = 5.5*u.hour
+		timezone = 'Asia/Kolkata'
+	else:
+		location = find_location(obsname, lat, longi, alt)
+		utcoffset, timezone = find_utc_offset(location, obstime, timezone=timezone)
+		
 	observatory = Observer(location=location, name="", timezone=timezone)
 	return observatory, utcoffset
 

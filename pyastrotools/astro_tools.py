@@ -1,3 +1,4 @@
+
 '''
 Basic Astronomy functions - 
 1. deg_to_rad() - Convert degree to radians
@@ -48,6 +49,9 @@ Exoplanet specific functions -
 11. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
 12. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
 13. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
+14. CalculateHillRadius - Calculate the Hill Radius
+15. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
+
 '''
 
 import numpy as np
@@ -1170,3 +1174,109 @@ def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
 	
 	return Age.n, Age.s
 		
+		
+def CalculateHillRadius(pl_orbsmax, pl_masse, st_mass, pl_orbeccen=0.0):
+	"""
+	Calculate the Hill Radius
+	
+	INPUTS:
+		pl_orbsmax:  Semi-major axis of the smaller object (AU)
+		pl_masse: Mass of the smaller object (Earth mass)
+		st_mass: Mass of the larger object (Solar mass)
+		pl_orbeccen: Eccentricity of the smaller object. Default is 0.0
+		
+	OUTPUTS:
+		r_hill: Hill Radius (km)
+	
+	from pyastrotools.astro_tools
+	Shubham Kanodia 26th May 2022
+	"""
+	
+	st_mass = st_mass * u.M_sun
+	pl_masse = pl_masse * u.M_earth
+	pl_orbsmax = pl_orbsmax * u.au
+	
+	
+	r_hill = pl_orbsmax*(1-pl_orbeccen) * (((pl_masse/3/st_mass).to(u.m/u.m))**(1/3))
+	
+	return r_hill.to(u.km).value
+				
+	
+pl_orbeccen = 0.1
+pl_rade = 6
+pl_masse = 30
+pl_orbper = 11.5
+pl_orbsmax = 0.1
+st_mass = 1
+pl_orbeccenerr1 = 0
+
+
+pl_orbeccen = 0.14
+pl_rade = 12
+pl_masse = 85.3
+pl_orbper = 3.438
+pl_orbsmax = 0.03845
+pl_orbeccenerr1 = 0.06
+st_mass = 0.64
+pl_insol = 55.4
+
+
+redQ = 1e5
+epsilon = 0.0
+
+
+def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_insol, st_mass, redQ,
+	pl_orbeccenerr1=0.0):
+	"""
+	Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
+	
+	INPUTS:
+		pl_orbeccen, pl_orbeccenerr1 = Eccentricity of planet, with the default error = 0
+		pl_rade = Radius of the planet [Earth radius]
+		pl_orbsmax = Semi-major axis [AU]
+		pl_orbper = Orbital Period [d]
+		pl_insol = Planetary insolation [S_earth]
+		
+	OUTPUTS:
+		L_tide = Power imparted by the tidal forces [Watts]
+		L_irradiance = Power imparted on the planet due to bolometric luminosity
+		L_tide/L_irradiance = Ratio of the two
+		T_tides = Temperature due to tides, assuming L = 4*pi*rp^2 T_tide^4
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 26th May 2022
+	"""
+
+	pl_orbeccen = ufloat(pl_orbeccen, pl_orbeccenerr1)
+	pl_rade = pl_rade * u.R_earth
+	pl_orbper = pl_orbper * u.d
+	pl_orbsmax = pl_orbsmax * u.au
+	st_mass = st_mass * u.M_sun
+	
+	N_a_e = (1 + ((31/2)*(pl_orbeccen**2)) + ((255/8)*(pl_orbeccen**4)) + 
+		((185/16)*(pl_orbeccen**6)) + ((25/64)*(pl_orbeccen**8))) / ((1-(pl_orbeccen**2))**(15/2))
+
+	N_e = (1 + ((15/2)*(pl_orbeccen**2)) + ((45/8)*(pl_orbeccen**4)) + 
+		((5/16)*(pl_orbeccen**6)) ) / ((1-(pl_orbeccen**2))**(6))
+	
+	Omega_e = (1 + ((3)*(pl_orbeccen**2)) + ((3/8)*(pl_orbeccen**4))) / ((1-(pl_orbeccen**2))**(9/2))
+	
+	n = 2*np.pi/pl_orbper
+	
+	K = (3*n/2) * (2/(3*redQ)) * (ac.G*st_mass*st_mass/pl_rade) * ((pl_rade/pl_orbsmax)**6)
+	K = K.to(u.W)
+	
+	L_tide = 2*K*(N_a_e - (N_e*N_e*2*(np.cos(np.deg2rad(epsilon))**2))/(Omega_e * (1 + (np.cos(np.deg2rad(epsilon))**2))))
+	
+	# 1360 W/m2 is the solar flux constant
+	L_irr = pl_insol * (1360*u.W/(u.m**2)) * (4*np.pi*pl_rade**2)
+	L_irr = L_irr.to(u.W)
+	
+	T_tides = ((L_tide / (ac.sigma_sb * (pl_rade**2) * (4*np.pi)) )**(1/4)).to(u.K)
+	
+	# print("N_a_e = {:.5f}".format(N_a_e.n))
+	# print("N_e = {:.5f}".format(N_e.n))
+	# print("Omega_e  = {:.5f}".format(Omega_e.n))
+	
+	return L_tide, L_irr, L_tide/L_irr, T_tides
+	
