@@ -21,7 +21,7 @@ print(Location)
 from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, mdwarf_teff_from_r, fgk_teff_from_mr_feh, get_stellar_data_and_mag
 
 try:
-	ETCDirectory = r"C:\Users\shbhu\Documents\GitHub\TESS_MADNESS\src\ETC"
+	ETCDirectory = r"C:\Users\skanodia\Documents\GitHub\TESS_MADNESS\src\ETC"
 	sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20190329"))
 	from neid_etcalc_public import NEID_RV_prec
 

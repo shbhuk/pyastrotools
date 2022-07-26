@@ -4,4 +4,5 @@ setup.py
 pyastrotools.egg-info/PKG-INFO
 pyastrotools.egg-info/SOURCES.txt
 pyastrotools.egg-info/dependency_links.txt
+pyastrotools.egg-info/requires.txt
 pyastrotools.egg-info/top_level.txt
