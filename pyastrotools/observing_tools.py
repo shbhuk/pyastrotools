@@ -18,7 +18,7 @@ Location = os.path.dirname(os.path.abspath(__file__))
 print(Location)
 
 
-from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, mdwarf_teff_from_r, fgk_teff_from_mr_feh, get_stellar_data_and_mag
+from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, Mann2015_mdwarf_teff_from_r, fgk_teff_from_mr_feh, get_stellar_data_and_mag
 
 try:
 	ETCDirectory = r"C:\Users\skanodia\Documents\GitHub\TESS_MADNESS\src\ETC"

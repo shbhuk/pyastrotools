@@ -23,14 +23,16 @@ Spectral utilities -
 3. wav_vactoair - Convert wavelength vacuum to air
 
 Stellar parameter scaling relations - 
-1. Mann2015_mdwarf_r_from_ks(AbsK) - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
-2. mdwarf_r_from_teff - Calculate Mdwarf radius from Teff
-3. mdwarf_teff_from_r - Calculate Mdwarf Teff from radius
-4. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
-5. PhotometricMetallicity_Bonfils2005 - Use the photometric relation (Eqn 1) from Bonfils et al. 2005 to calculate metallicity
-6. PhotometricMetallicity_JohnsonApps2009 - Use the photometric relation from Johnson and Apps 2009 to calculate metallicity
-7. PhotometricMetallicity_SchlaufmanLaughlin2010 - Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
-8. PhotometricMetallicity_Neves2012 - Use Eqn 3 from Neves et al. 2012 to calculate the metallicity for M dwarfs
+1. Mann2015_mdwarf_r_from_ks - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
+2. Mann2015_mdwarf_m_from_ks - Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
+3. Mann2015_mdwarf_r_from_teff - Calculate Mdwarf radius from Teff from eqn 4
+3. Mann2015_mdwarf_r_from_teff - Calculate Mdwarf radius from Teff
+4. Mann2015_mdwarf_teff_from_r - Calculate Mdwarf Teff from radius
+5. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
+6. PhotometricMetallicity_Bonfils2005 - Use the photometric relation (Eqn 1) from Bonfils et al. 2005 to calculate metallicity
+7. PhotometricMetallicity_JohnsonApps2009 - Use the photometric relation from Johnson and Apps 2009 to calculate metallicity
+8. PhotometricMetallicity_SchlaufmanLaughlin2010 - Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
+9. PhotometricMetallicity_Neves2012 - Use Eqn 3 from Neves et al. 2012 to calculate the metallicity for M dwarfs
 
 General Functions - 
 1. get_stellar_data_and_mag - 	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
@@ -513,7 +515,7 @@ def wav_vactoair(lv):
 	la = lv/(1 + n_m_1)
 	return la
 
-def mdwarf_r_from_teff(st_teff,plot=False):
+def Mann2015_mdwarf_r_from_teff(st_teff,plot=False):
 	"""
 	Get M-dwarf radius from effective temperature
 
@@ -551,8 +553,47 @@ def mdwarf_r_from_teff(st_teff,plot=False):
 		ax.plot(st_teff,R,'k.')
 		ax.plot(_T,_R,color='red')
 	return R
+	
 
-def mdwarf_teff_from_r(st_rad,plot=False):
+def Mann2015_mdwarf_r_from_teff_feh(st_teff, FeH=None):
+	"""
+	Get M-dwarf radius from effective temperature
+
+	INPUT:
+		Effective temperature in K. Has to be between 2700K and 4200K
+
+	OUTPUT:
+		stellar radius in solar radii
+		is between 0.125 R_sun and 0.68 R_sun
+
+	NOTES:
+		Figure 9 in Mann et al. 2015
+		Equation 5
+		Constants in Table 1
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 27th April 2021
+		
+	"""
+	
+	if FeH is None:
+		return Mann2015_mdwarf_r_from_teff(st_teff)
+	if np.any(st_teff>4200):
+		print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
+	if np.any(st_teff>2700):
+		print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
+	a = 16.7700
+	b = -54.3210 
+	c = 57.6627
+	d = -19.6994
+	f = 0.4565
+	X = st_teff/3500.
+	R = (a + b*X + c*X**2. + d*X**3.) * (1 + f*FeH)
+
+	return R
+
+
+def Mann2015_mdwarf_teff_from_r(st_rad,plot=False):
 	"""
 	Interpolates the mdwarf_r_from_teff function
 
@@ -574,7 +615,7 @@ def mdwarf_teff_from_r(st_rad,plot=False):
 		print('Using {} elements and {} are nans'.format(np.sum(m),np.sum(~m)))
 
 	_T = np.linspace(2700,4200) # Mann sample
-	_R = mdwarf_r_from_teff(_T)
+	_R = Mann2015_mdwarf_r_from_teff(_T)
 	teffs = np.ones(np.size(st_rad))*np.nan
 	teffs[m] = interp1d(_R,_T,kind='linear')(st_rad[m])
 	if plot:
@@ -593,7 +634,42 @@ def Mann2015_mdwarf_r_from_ks(AbsK):
 	c = 0.01680
 	
 	radius = a + b*AbsK + c*(AbsK**2)
+	
 	return radius
+	
+def Mann2015_mdwarf_r_from_ks_feh(AbsK, FeH=None):
+	"""
+	Calculate the stellar radius from absolute K mag from eqn 5 in Mann 2015
+	Typical scatter in radius is ~20%
+	"""
+	
+	if FeH is None:
+		return Mann2015_mdwarf_r_from_ks(AbsK)
+	
+	a = 1.9305
+	b = -0.3466
+	c = 0.01647
+	f = 0.04458
+	
+	radius = (a + b*AbsK + c*(AbsK**2))* (1 + f*FeH) 
+	
+	return radius
+	
+	
+def Mann2015_mdwarf_m_from_ks(AbsK):
+	"""
+	Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
+	Typical scatter in mass is ~??%
+	"""
+	
+	a = 0.5858
+	b = 0.3872
+	c = - 0.1217 
+	d = 0.0106
+	e = -2.7262 * 1e-4
+	
+	mass = a + b*AbsK + c*(AbsK**2) + d*(AbsK**3)+ e*(AbsK**4)
+	return mass
 	
 def PhotometricMetallicity_Bonfils2005(V, K, MK):
 	"""
