@@ -6,6 +6,7 @@ import datetime
 from scipy.integrate import simps
 from scipy.interpolate import UnivariateSpline
 
+import matplotlib.pyplot as plt
 
 def ispositive(i):
 	if i<0:

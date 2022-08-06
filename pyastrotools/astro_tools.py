@@ -655,6 +655,18 @@ def Mann2015_mdwarf_r_from_ks_feh(AbsK, FeH=None):
 	
 	return radius
 	
+def Mann2019_mdwarf_m_from_ks(AbsK):
+	"""
+	Calculate the stellar mass from absolute K mag from eqn 4 in Mann 2019
+	Typical scatter in mass is 2-3%
+	"""
+	a = [-0.642, -0.208, 8.43e-4, 7.87e-3, 1.42e-4, -2.13e-4]
+	zp = 7.5
+	M = 0
+	
+	for i in range(len(a)): M+=a[i]*((AbsK - zp)**i)
+
+	return 10**M
 	
 def Mann2015_mdwarf_m_from_ks(AbsK):
 	"""
