@@ -680,7 +680,46 @@ def Mdwarf_m_from_ks_Mann2019(AbsK):
 	for i in range(len(a)): M+=a[i]*((AbsK - zp)**i)
 
 	return 10**M
+
+
+def Mdwarf_m_from_AbsMag_Delfosse2000(AbsK=None, AbsH=None, AbsJ=None, AbsV=None):
+	"""
+	Calculate the stellar mass from absolute  V, J, H, K magnitues from Delfosse 2000
 	
+	Check if the magnitudes fall within the range of the paper, i.e. roughly 0.1 to 0.5 M_sun
+	
+	Output:
+		AbsK, AbsH, AbsJ, AbsV
+	"""
+	if AbsK is not None:
+		CoeffK = [1.8, 6.12, 13.205, -6.2315, 0.37529]
+		StMass_K = 0
+		for i in range(len(CoeffK)): StMass_K += (AbsK**i) * CoeffK[i]
+		StMass_K = 10**(StMass_K*1e-3)
+	else: StMass_K = None
+	
+	if AbsH is not None:
+		CoeffH = [1.4, 4.76, 10.641, -5.0320, 0.28396]
+		StMass_H = 0
+		for i in range(len(CoeffH)): StMass_H += (AbsH**i) * CoeffH[i]
+		StMass_H = 10**(StMass_H*1e-3)
+	else: StMass_H = None
+
+	if AbsJ is not None:
+		CoeffJ = [1.6, 6.01, 14.888, -5.3557, 0.28396]
+		StMass_J = 0
+		for i in range(len(CoeffJ)): StMass_J += (AbsJ**i) * CoeffJ[i]
+		StMass_J = 10**(StMass_J*1e-3)
+	else: StMass_J = None
+	
+	if AbsV is not None:
+		CoeffV = [0.3, 1.87, 7.6140, -1.6980, 0.060958]
+		StMass_V = 0
+		for i in range(len(CoeffV)): StMass_V += (AbsV**i) * CoeffV[i]
+		StMass_V = 10**(StMass_J*1e-3)
+	else: StMass_V = None
+	
+	return StMass_K, StMass_H, StMass_J, StMass_V
 
 def Mdwarf_m_from_AbsMag_Benedict2016(AbsK=None, AbsV=None):
 	"""
