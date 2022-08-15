@@ -23,12 +23,11 @@ Spectral utilities -
 3. wav_vactoair - Convert wavelength vacuum to air
 
 Stellar parameter scaling relations - 
-2. Mdwarf_m_from_ks_Mann2015( - Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
-1. Mdwarf_r_from_ks_Mann2015( - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
-3. Mdwarf_r_from_ks_Mann2015(_feh- Calculate Mdwarf radius from Teff from eqn 4
+1. Mann2015_mdwarf_r_from_ks - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
+2. Mann2015_mdwarf_m_from_ks - Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
+3. Mann2015_mdwarf_r_from_teff - Calculate Mdwarf radius from Teff from eqn 4
 3. Mann2015_mdwarf_r_from_teff - Calculate Mdwarf radius from Teff
-3. Mdwarf_r_from_teff_feh_Mann2015 - Calculate Mdwarf radius from Teff and FeH
-4. Mdwarf_teff_from_r_Mann2015 - Calculate Mdwarf Teff from radius
+4. Mann2015_mdwarf_teff_from_r - Calculate Mdwarf Teff from radius
 5. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
 6. PhotometricMetallicity_Bonfils2005 - Use the photometric relation (Eqn 1) from Bonfils et al. 2005 to calculate metallicity
 7. PhotometricMetallicity_JohnsonApps2009 - Use the photometric relation from Johnson and Apps 2009 to calculate metallicity
@@ -516,7 +515,7 @@ def wav_vactoair(lv):
 	la = lv/(1 + n_m_1)
 	return la
 
-def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
+def Mann2015_mdwarf_r_from_teff(st_teff,plot=False):
 	"""
 	Get M-dwarf radius from effective temperature
 
@@ -536,10 +535,10 @@ def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 	Shubham Kanodia 27th April 2021
 		
 	"""
-	# if np.any(st_teff>4200):
-		# print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
-	# if np.any(st_teff>2700):
-		# print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
+	if np.any(st_teff>4200):
+		print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
+	if np.any(st_teff>2700):
+		print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
 	a = 10.5440
 	b = -33.7546
 	c = 35.1909
@@ -556,7 +555,7 @@ def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 	return R
 	
 
-def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
+def Mann2015_mdwarf_r_from_teff_feh(st_teff, FeH=None):
 	"""
 	Get M-dwarf radius from effective temperature
 
@@ -578,11 +577,11 @@ def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 	"""
 	
 	if FeH is None:
-		return Mdwarf_r_from_teff_Mann2015(st_teff)
-	# if np.any(st_teff>4200):
-		# print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
-	# if np.any(st_teff>2700):
-		# print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
+		return Mann2015_mdwarf_r_from_teff(st_teff)
+	if np.any(st_teff>4200):
+		print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
+	if np.any(st_teff>2700):
+		print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
 	a = 16.7700
 	b = -54.3210 
 	c = 57.6627
@@ -594,7 +593,7 @@ def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 	return R
 
 
-def Mdwarf_teff_from_r_Mann2015(st_rad,plot=False):
+def Mann2015_mdwarf_teff_from_r(st_rad,plot=False):
 	"""
 	Interpolates the mdwarf_r_from_teff function
 
@@ -616,7 +615,7 @@ def Mdwarf_teff_from_r_Mann2015(st_rad,plot=False):
 		print('Using {} elements and {} are nans'.format(np.sum(m),np.sum(~m)))
 
 	_T = np.linspace(2700,4200) # Mann sample
-	_R = Mdwarf_r_from_teff_Mann2015(_T)
+	_R = Mann2015_mdwarf_r_from_teff(_T)
 	teffs = np.ones(np.size(st_rad))*np.nan
 	teffs[m] = interp1d(_R,_T,kind='linear')(st_rad[m])
 	if plot:
@@ -624,7 +623,7 @@ def Mdwarf_teff_from_r_Mann2015(st_rad,plot=False):
 		ax.plot(teffs,st_rad,'k.')
 	return teffs
 
-def Mdwarf_r_from_ks_Mann2015(AbsK):
+def Mann2015_mdwarf_r_from_ks(AbsK):
 	"""
 	Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
 	Typical scatter in radius is ~20%
@@ -638,14 +637,14 @@ def Mdwarf_r_from_ks_Mann2015(AbsK):
 	
 	return radius
 	
-def Mdwarf_r_from_ks_feh_Mann2015(AbsK, FeH=None):
+def Mann2015_mdwarf_r_from_ks_feh(AbsK, FeH=None):
 	"""
 	Calculate the stellar radius from absolute K mag from eqn 5 in Mann 2015
 	Typical scatter in radius is ~20%
 	"""
 	
 	if FeH is None:
-		return Mdwarf_r_from_ks_Mann2015(AbsK)
+		return Mann2015_mdwarf_r_from_ks(AbsK)
 	
 	a = 1.9305
 	b = -0.3466
@@ -656,7 +655,7 @@ def Mdwarf_r_from_ks_feh_Mann2015(AbsK, FeH=None):
 	
 	return radius
 
-def Mdwarf_m_from_r_Schweitzer2019(radius):
+def Schweitzer2019_mdwarf_m_from_r(radius):
 	"""
 	Calculate a stellar mass based on the empirically calibrated sample from Schweitzer 2019 (Eqn 6)
 	"""
@@ -668,7 +667,7 @@ def Mdwarf_m_from_r_Schweitzer2019(radius):
 	return a + b*radius
 	
 
-def Mdwarf_m_from_ks_Mann2019(AbsK):
+def Mann2019_mdwarf_m_from_ks(AbsK):
 	"""
 	Calculate the stellar mass from absolute K mag from eqn 4 in Mann 2019
 	Typical scatter in mass is 2-3%
@@ -681,64 +680,7 @@ def Mdwarf_m_from_ks_Mann2019(AbsK):
 
 	return 10**M
 	
-
-def Mdwarf_m_from_AbsMag_Benedict2016(AbsK=None, AbsV=None):
-	"""
-	Calculate the stellar mass from absolute K mag from eqn 11 in Benedict 2016
-	Typical scatter in mass is 2-3%
-	"""
-	if AbsK is not None:
-		C0 = ufloat(0.2311, 0.0004)
-		C1 = ufloat(-0.1352, 0.0007)
-		C2 = ufloat(0.0400, 0.0005)
-		C3 = ufloat(0.0038, 0.0002)
-		C4 = ufloat(-0.0032, 0.0001)
-		x0 = 7.5
-	
-		StMass_K = C0 + C1*(AbsK - x0) + C2*((AbsK - x0)**2)  + C3*((AbsK - x0)**3)  + C4*((AbsK - x0)**4) 
-	else: StMass_K = None
-	
-	if AbsV is not None:
-		C0 = ufloat(0.19226, 0.000424)
-		C1 = ufloat(-0.050737, 0.000582)
-		C2 = ufloat(0.01037, 0.00021)
-		C3 = ufloat(-0.00075399, 4.57e-5)
-		C4 = ufloat(1.9858e-5, 1.09e-5)
-		x0 = 13
-	
-		StMass_V = C0 + C1*(AbsV - x0) + C2*((AbsV - x0)**2)  + C3*((AbsV - x0)**3)  + C4*((AbsV - x0)**4) 
-	else: StMass_V = None
-	
-	return StMass_K, StMass_V
-	
-def Mdwarf_AbsMag_from_m_Benedict2016(StMass):
-	"""
-	Calculate absolute K and V mag from stellar mass using Eqn 10 in Benedict 2016.
-	
-	Typical errors:
-		Vmag : 0.19 mag
-		Kmag: 0.09 mag
-	
-	"""
-	
-	y0 = -11.41; 
-	A1 = 1.64; Tau1 = 0.05; 
-	A2 = 19.81; Tau2 = 3.1
-	x0 = 0.076
-	AbsK = y0 + A1*np.exp( - (StMass - x0)/Tau1) + A2*np.exp( - (StMass - x0)/Tau2)
-	
-	y0 = -2.59; 
-	A1 = 4.77; Tau1 = 0.03;
-	A2 = 16.98; Tau2 = 1.38;
-	x0 = 0.076
-	AbsV = y0 + A1*np.exp( - (StMass - x0)/Tau1) + A2*np.exp( - (StMass - x0)/Tau2)
-	
-	return AbsK, AbsV
-	
-
-
-	
-def Mdwarf_m_from_ks_Mann2015(AbsK):
+def Mann2015_mdwarf_m_from_ks(AbsK):
 	"""
 	Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
 	Typical scatter in mass is ~??%
@@ -1169,7 +1111,7 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 
 	AgeArray = np.array([0.3, 1, 4.5])
 	AgeIndex = np.argmin(np.abs(AgeArray-QueryAge))
-	TablePath = os.path.join(CodeDir, 'Data', 'Fortney2007_Tab{}.txt'.format(int(AgeIndex+2)))
+	TablePath = os.path.join(os.path.dirname(CodeDir), 'Data', 'Fortney2007_Tab{}.txt'.format(int(AgeIndex+2)))
 
 	Rjup2Rearth = 11.208
 	QueryRadius = QueryRadiusE / Rjup2Rearth

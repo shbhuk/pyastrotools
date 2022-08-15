@@ -13,7 +13,7 @@ setup(name='pyastrotools',
       author='Shubham Kanodia',
       install_requires=[
 		  'astropy==4.2',
-		  'numpy==1.22.3',
+		  'numpy==1.20.3',
 		  'scipy',
 		  'astroquery>=0.3.10', 
 		  'astroplan',

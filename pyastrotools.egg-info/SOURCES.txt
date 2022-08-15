@@ -1,8 +1,15 @@
 .gitattributes
 README.md
 setup.py
+pyastrotools/__init__.py
+pyastrotools/astro_flux_calc.py
+pyastrotools/astro_tools.py
+pyastrotools/general_tools.py
+pyastrotools/observing_tools.py
+pyastrotools/optics_tools.py
 pyastrotools.egg-info/PKG-INFO
 pyastrotools.egg-info/SOURCES.txt
 pyastrotools.egg-info/dependency_links.txt
 pyastrotools.egg-info/requires.txt
 pyastrotools.egg-info/top_level.txt
+pyastrotools/NEA/nasa_exoplanet_archive.py

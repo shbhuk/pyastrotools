@@ -18,7 +18,7 @@ Location = os.path.dirname(os.path.abspath(__file__))
 print(Location)
 
 
-from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, Mdwarf_teff_from_r_Mann2015, fgk_teff_from_mr_feh, get_stellar_data_and_mag
+from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, Mann2015_mdwarf_teff_from_r, fgk_teff_from_mr_feh, get_stellar_data_and_mag
 
 try:
 	ETCDirectory = r"C:\Users\skanodia\Documents\GitHub\TESS_MADNESS\src\ETC"
@@ -27,11 +27,8 @@ try:
 
 	sys.path.append(os.path.join(ETCDirectory, "HPF"))
 	from rvprec import HPF_ETC
-
-	sys.path.append(os.path.join(ETCDirectory, "maroonx"))
-	from maroonx_help import MAROONX_ETC
 except:
-	print("Unable to load HPF,  NEID or MAROON-X ETCs")
+	print("Unable to load HPF and NEID ETCs")
 
 try:
 	from mrexo.predict import predict_from_measurement
