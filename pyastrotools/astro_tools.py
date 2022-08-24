@@ -515,6 +515,15 @@ def wav_vactoair(lv):
 	n_m_1 = 6.4328e-5 + 2.94981e-2/(146-sig**2) + 2.5540e-4/(41-sig**2)
 	la = lv/(1 + n_m_1)
 	return la
+	
+
+def Mdwarf_teff_from_AbsMag_Rabus2019(MG):
+	"""
+	Calculates Teff based on a cubic polynomial from M_G (absolute Gaia mag)
+	"""
+	Teff = ufloat(10171.7, 1449.6) - ufloat(1493.4, 410.8)*MG + ufloat(114.1, 38.3)*(MG**2) - ufloat(3.2, 1.2)*(MG**3)
+	
+	return Teff
 
 def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 	"""
@@ -1043,12 +1052,15 @@ def calculate_orbvelocity(st_mass, pl_orbper=None, pl_orbsmax=None):
 
 
 
-def calculate_orbperiod(st_mass, pl_orbsmax):
+def calculate_orbperiod(st_mass, pl_orbsmax, secondary_mass=0):
 	"""
 	Calculate the orbital period given the Semi Major Axis and the stellar mass.
 	INPUTS:
 		st_mass = Stellar Mass in Solar Masses
 		pl_orbsmax = In AU
+		
+		Optional:  secondary_mass: Mass of the secondary in Solar Masses
+		
 	OUTPUTS:
 		pl_orbper = Orbital Period in years
 		
@@ -1059,8 +1071,9 @@ def calculate_orbperiod(st_mass, pl_orbsmax):
 	pl_orbsmax = (pl_orbsmax*ac.au).to(u.m)
 	# ~ pl_orbper = (pl_orbper*u.yr).to(u.s)
 	st_mass = (st_mass*ac.M_sun).to(u.kg)
+	secondary_mass = (secondary_mass*ac.M_sun).to(u.kg)
 
-	pl_orbper = (((pl_orbsmax**3) * (4*np.pi**2)/(ac.G*st_mass)))**(1/2)
+	pl_orbper = (((pl_orbsmax**3) * (4*np.pi**2)/(ac.G*(st_mass+secondary_mass))))**(1/2)
 
 	return pl_orbper.to(u.yr).value
 
@@ -1126,6 +1139,37 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 	TSM = scale * (((pl_rade**3)*pl_eqt)/(pl_masse*st_rad*st_rad)) * 10**(-st_j/5)
 
 	return TSM
+
+
+def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_raderr1=0.0):
+	"""
+	Calculate Emission Spectroscopy Metric (ESM) from Kempton 2018 (for JWST)
+	INPUTS:
+		pl_rade = Planetary radius in Earth radii
+		pl_eqt = Equilibrium Temperature in Kelvin
+		st_rad = Stellar Radius in Sol radi
+		st_teff = Effective Temperature in Kelvin
+		st_k = K magnitude
+	OUTPUTS:
+		ESM
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 23rd August 2022
+
+	"""
+	
+	from astropy.modeling import models
+	from uncertainties import ufloat
+	
+	Rsun2Rearth = u.R_sun.to(u.R_earth)
+	
+	pl_rade = ufloat(pl_rade, pl_radeerr1)
+	st_rad = ufloat(st_rad, st_raderr1)
+
+	ESM = (4.29e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*1.10*u.K)(7.5*u.um) / models.BlackBody(temperature=st_teff*u.K)(7.5*u.um)).value *  (10**(-st_k/5))
+
+	return ESM
+
 
 def CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=0.0, pl_radeerr1=0.0):
 	"""
