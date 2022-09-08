@@ -30,8 +30,11 @@ try:
 
 	sys.path.append(os.path.join(ETCDirectory, "maroonx"))
 	from maroonx_help import MAROONX_ETC
+
+	sys.path.append(os.path.join(ETCDirectory, "KPF_ETC"))
+	from kpf_etc import kpf_photon_noise_estimate
 except:
-	print("Unable to load HPF,  NEID or MAROON-X ETCs")
+	print("Unable to load HPF,  NEID, KPF or MAROON-X ETCs")
 
 try:
 	from mrexo.predict import predict_from_measurement
