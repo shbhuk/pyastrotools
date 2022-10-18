@@ -1,5 +1,6 @@
 # pyastrotools
  Private repository with set of functions for Shubham Kanodia
+ If you use this code in your research, please double-check with Shubham Kanodia if the function/code is up-to-date as this repository is in constant flux.
 
 
 ## Installation
