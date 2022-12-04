@@ -19,6 +19,7 @@ setup(name='pyastrotools',
 		  'astroplan',
 		  'uncertainties', 
 		  'pandas',
+		  'openpyxl',
 		   'matplotlib==3.5.2',
 		   # 'WavelengthCalibrationTool @ git+https://github.com/indiajoe/WavelengthCalibrationTool.git@master' # Example from Joe
 		   'mrexo @ git+https://github.com/shbhuk/mrexo.git@n_dimensions_generalization', # Need this for the mass prediction

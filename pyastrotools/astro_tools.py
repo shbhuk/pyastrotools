@@ -264,7 +264,6 @@ def rv_magnitude_period_uncertainty(pl_masse, st_mass, pl_orbper, pl_orbincl=np.
 	Shubham Kanodia 27th April 2021
 		
 	'''
-	from uncertainties import ufloat
 
 	pl_masse = ufloat(pl_masse , pl_masseerr1)
 	st_mass = ufloat(st_mass, st_masserr1)
@@ -669,7 +668,6 @@ def Mdwarf_m_from_r_Schweitzer2019(radius):
 	"""
 	Calculate a stellar mass based on the empirically calibrated sample from Schweitzer 2019 (Eqn 6)
 	"""
-	from uncertainties import ufloat
 
 	a = ufloat(-0.0240, 0.0076)
 	b = ufloat(1.055, 0.017)
@@ -960,7 +958,6 @@ def calculate_stellar_luminosity(st_rad, st_teff, st_raderr1=0.0, st_tefferr1=0.
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
 	"""
-	from uncertainties import ufloat
 
 	st_rad = ufloat(st_rad, st_raderr1)
 	Teff = ufloat(st_teff, st_tefferr1)
@@ -984,7 +981,6 @@ def calculate_insolation_flux(st_lum, pl_orbsmax, st_lumerr1=0.0, pl_orbsmaxerr1
 		
 	"""
 
-	from uncertainties import ufloat
 	st_lum = ufloat(st_lum, st_lumerr1)
 	pl_orbsmax = ufloat(pl_orbsmax, pl_orbsmaxerr1)
 
@@ -1006,7 +1002,6 @@ def calculate_semi_major_axis(st_mass, pl_orbper, st_masserr1=0.0, pl_orbpererr1
 	Shubham Kanodia 27th April 2021
 		
 	"""
-	from uncertainties import ufloat
 
 	pl_orbper = (pl_orbper*u.yr).to(u.s).value
 	pl_orbpererr1 = (pl_orbpererr1*u.yr).to(u.s).value
@@ -1020,6 +1015,25 @@ def calculate_semi_major_axis(st_mass, pl_orbper, st_masserr1=0.0, pl_orbpererr1
 	pl_orbsmax = (((pl_orbper**2) * (ac.G.value*st_mass))/(4*np.pi**2))**(1/3) / AU
 
 	return pl_orbsmax
+
+def calculate_surface_gravity(pl_rade, pl_masse, pl_radeerr1=None, pl_masseerr1=None):
+	'''
+	Calculate the surface gravity for a planet in m/s2
+
+	INPUTS:
+		pl_masse = Planetary mass in Earth masses
+		pl_rade = Planetary radius in Earth radii
+
+
+	'''
+	if pl_radeerr1 is None: pl_radeerr1 = 0
+	Radius = ufloat(pl_rade, pl_radeerr1)
+	if pl_masseerr1 is None: pl_masseerr1 = 0
+	Mass = ufloat(pl_masse, pl_masseerr1)
+
+	Gravity = (ac.G * (Mass*ac.M_earth) / ((Radius*ac.R_earth)**2)) # Where the surface gravity for Earth is 9.79 m/s2
+
+	return Gravity
 
 
 def calculate_orbvelocity(st_mass, pl_orbper=None, pl_orbsmax=None):
@@ -1093,7 +1107,6 @@ def calculate_eqtemperature(st_rad, st_teff, pl_orbsmax, st_raderr1=0.0, st_teff
 	"""
 	AU2SolarRadii = u.AU.to(u.R_sun)
 
-	from uncertainties import ufloat
 	st_rad = ufloat(st_rad, st_raderr1)
 	st_teff = ufloat(st_teff, st_tefferr1)
 	pl_orbsmax = ufloat(pl_orbsmax*AU2SolarRadii, pl_orbsmaxerr1*AU2SolarRadii)
@@ -1130,7 +1143,6 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 	else:
 		scale = 1.15
 
-	from uncertainties import ufloat
 	pl_rade = ufloat(pl_rade, pl_radeerr1)
 	pl_eqt = ufloat(pl_eqt, pl_eqterr1)
 	pl_masse = ufloat(pl_masse, pl_masseerr1)
@@ -1159,7 +1171,6 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 	"""
 	
 	from astropy.modeling import models
-	from uncertainties import ufloat
 	
 	Rsun2Rearth = u.R_sun.to(u.R_earth)
 	
@@ -1521,3 +1532,144 @@ def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_ins
 	
 	return L_tide, L_irr, L_tide/L_irr, T_tides
 	
+
+
+def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean_mag', 
+	AbsRV=None, e_AbsRV=None, verbose=True):
+	'''
+	Assumes the brightest thing within the 60" is the target star
+
+	Inputs:
+	RA, Dec =  In degrees
+	ConeRadius = Cone radius to search (in arcseonds)
+	ComparisonGaiaBand = Will assign the brightest star to be the target in the Gaia cone in this band. 
+	AbsRV, e_AbsRV = Bulk absolute velocity and error [km/s]. Default is None, but can specify values to overwrite the Gaia values
+	verbose  = If True, will print the values
+	
+	'''
+
+	from astropy.coordinates import SkyCoord
+	from astroquery.gaia import Gaia
+
+	coord = SkyCoord(ra=RA, dec=Dec, unit=(u.degree, u.degree), frame='icrs')
+	j = Gaia.cone_search_async(coord, radius=ConeRadius*u.arcsec)
+	r = j.get_results()
+
+	Columns = ['dist', 'source_id', 'solution_id', 
+		'ra', 'ra_error', 'dec', 'dec_error',
+		'parallax', 'parallax_error', 'pmra', 'pmra_error', 'pmdec', 'pmdec_error',
+		'teff_val', 'lum_val', 'phot_g_mean_mag', 'phot_bp_mean_mag', 'phot_rp_mean_mag', 
+		'astrometric_excess_noise', 'astrometric_excess_noise_sig',
+		'radial_velocity', 'radial_velocity_error',]
+
+	t = r[Columns].to_pandas()
+	t_sorted = t.sort_values(ComparisonGaiaBand)
+
+	result = {}
+	result['PMRA'] = [t_sorted['pmra'].iloc[0]] # mas/year
+	result['PMDEC'] = [t_sorted['pmdec'].iloc[0]] # mas/year
+	result['RA_deg'] = [t_sorted['ra'].iloc[0]]
+	result['DEC_deg'] = [t_sorted['dec'].iloc[0]]
+	result['PLX_VALUE'] = [t_sorted['parallax'].iloc[0]] # mas
+	result['PLX_ERROR'] = [t_sorted['parallax_error'].iloc[0]]
+
+	if AbsRV is not None:
+		result['RV_VALUE']  = AbsRV
+		result['RVZ_ERROR'] = e_AbsRV
+	else:
+		result['RV_VALUE'] = [t_sorted['radial_velocity'].iloc[0]] # km/s
+		result['RVZ_ERROR'] = [t_sorted['radial_velocity_error'].iloc[0]] # km/s
+
+	# Required for covariance between PMRA and PMDec. Bit arbitrary
+	result['PM_ERR_MAJA'] = [0.02]
+	result['PM_ERR_MINA'] = [0.02] 
+
+	pms_lb = bovy_coords.pmrapmdec_to_pmllpmbb(result['PMRA'][0],result['PMDEC'][0],result['RA_deg'][0],result['DEC_deg'][0],degree=True)
+	pml,pmb = pms_lb[0], pms_lb[1]
+
+	lbs = bovy_coords.radec_to_lb(result['RA_deg'][0],result['DEC_deg'][0],degree=True)
+	l,b = lbs[0],lbs[1]
+
+	cov_pmrapmdec = np.array([[result['PM_ERR_MAJA'][0]**2.,0.],[0.,result['PM_ERR_MINA'][0]**2.]])
+
+	cov_pmlpmb = bovy_coords.cov_pmrapmdec_to_pmllpmbb(cov_pmrapmdec, result['RA_deg'][0],result['DEC_deg'][0],degree=True)
+
+	dist = 1./result['PLX_VALUE'][0]
+	rv = result['RV_VALUE'][0]
+	rverr = result['RVZ_ERROR'][0]
+	plx = result['PLX_VALUE'][0]
+	plxerr = result['PLX_ERROR'][0]
+
+
+	print('l,b :{}, {}'.format(l,b))
+	print('pml,pmb :{}, {}'.format(pml,pmb))
+	print('rv km/s, dist kpc :{}, {}'.format(rv,dist))
+
+	out_uvw = bovy_coords.vrpmllpmbb_to_vxvyvz(rv,
+										  pml,pmb,l,b,dist,
+										  degree=True)
+	out_cov = bovy_coords.cov_dvrpmllbb_to_vxyz(plx,plxerr,rverr,pml,pmb,cov_pmlpmb,l,b,plx=True,degree=True)
+
+	print("U,V,W velocity km/s {:.3f} {:.3f} {:.3f} ".format(*out_uvw))
+	print("U,V,W velocity uncertainties km/s = {:.3f} {:.3f} {:.3f}".format(*np.diag(np.sqrt(out_cov))))
+
+	uvw = out_uvw
+	error_uvw = np.diag(np.sqrt(out_cov))
+
+	if verbose:
+		print("{:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}".format(uvw[0],error_uvw[0], uvw[1],error_uvw[1], uvw[2],error_uvw[2]))
+
+	LSRVelocity = [11.1, 12.24, 7.25]
+	ErrorInLSR = [0.72, 0.47, 0.37]
+
+	if verbose:
+		print("Galactic Velocities in LSR {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}".format(uvw[0]+LSRVelocity[0],np.sqrt(error_uvw[0]**2 + ErrorInLSR[0]), 
+																																											uvw[1]+LSRVelocity[1],np.sqrt(error_uvw[1]**2 + ErrorInLSR[1]), 
+																																											uvw[2]+LSRVelocity[2],np.sqrt(error_uvw[2]**2 + ErrorInLSR[2])))
+
+	U, V, W = uvw
+	e_U, e_V, e_W = error_uvw
+
+	# LSR from Schonrich 2010
+	# https://academic.oup.com/mnras/article/403/4/1829/1054839
+	U += 11.10 # +- 0.72
+	V += 12.24 # +- 0.47
+	W += 7.25 # +- 0.37
+
+
+	def Probability(p):
+		"""
+		p = 'ThinDisk' or 'ThickDisk' or 'Halo'
+		Outputs the
+		"""
+
+
+		k = 1/(df[p].sigma_u * df[p].sigma_v * df[p].sigma_w * ((2*np.pi)**(3/2)))
+
+		deltaU = ((U - df[p].U_asym)**2)/(2*df[p].sigma_u*df[p].sigma_u)
+		deltaV = ((V - df[p].V_asym)**2)/(2*df[p].sigma_v*df[p].sigma_v)
+		deltaW = ((W)**2)/(2*df[p].sigma_v*df[p].sigma_v)
+
+		f = k*np.exp(-deltaU - deltaV - deltaW)
+
+		P = f*df[p].X
+
+		return P
+
+	if verbose:
+		print("Probability of Thin Disk to Thick Disk = {:.3f}".format(Probability("ThinDisk")/Probability("ThickDisk")))
+		print("Probability of Thin Disk to Halo = {:.3f}".format(Probability("ThinDisk")/Probability("Halo")))
+		print("Probability of Thin Disk to Hercules = {:.3f}".format(Probability("ThinDisk")/Probability("Hercules")))
+
+
+	output = {}
+	output['UVW_bary'] = uvw
+	output['e_UVW_bary'] = error_uvw
+	output['UVW_LSR'] = U, V, W
+	output['ProbThinDisk'] = Probability("ThinDisk")
+	output['ProbThickDisk'] = Probability("ThickDisk")
+	output['ProbHalo'] = Probability("Halo")
+	output['ProbHercules'] = Probability("Hercules")
+
+	return output
+
