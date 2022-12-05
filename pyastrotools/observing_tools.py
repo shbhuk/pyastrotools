@@ -22,6 +22,8 @@ from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, M
 
 try:
 	ETCDirectory = r"C:\Users\skanodia\Documents\GitHub\TESS_MADNESS\src\ETC"
+	ETCDirectory = os.path.join(os.path.dirname(os.path.dirname(Location)), 'TESS_MADNESS', 'src', 'ETC')
+	
 	sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20190329"))
 	from neid_etcalc_public import NEID_RV_prec
 

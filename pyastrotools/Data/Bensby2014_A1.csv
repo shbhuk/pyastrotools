@@ -1,0 +1,5 @@
+Population,sigma_u,sigma_v,sigma_w,U_asym,V_asym,X
+ThinDisk,35,20,16,0,-15,0.85
+ThickDisk,67,38,35,0,-46,0.09
+Halo,160,90,90,0,-220,0.0015
+Hercules,26,9,17,-40,-50,0.06

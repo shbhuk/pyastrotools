@@ -73,7 +73,6 @@ from astropy.io import fits
 from astropy import constants as ac
 from astropy import units as u
 from astropy.utils.exceptions import AstropyDeprecationWarning
-import astropy.units as u
 from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 from astroquery.mast import Catalogs
@@ -1534,7 +1533,7 @@ def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_ins
 	
 
 
-def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean_mag', 
+def GetUVW_Membership(RA, Dec, ConeRadius=60, 
 	AbsRV=None, e_AbsRV=None, verbose=True):
 	'''
 	Assumes the brightest thing within the 60" is the target star
@@ -1542,7 +1541,6 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean
 	Inputs:
 	RA, Dec =  In degrees
 	ConeRadius = Cone radius to search (in arcseonds)
-	ComparisonGaiaBand = Will assign the brightest star to be the target in the Gaia cone in this band. 
 	AbsRV, e_AbsRV = Bulk absolute velocity and error [km/s]. Default is None, but can specify values to overwrite the Gaia values
 	verbose  = If True, will print the values
 	
@@ -1550,6 +1548,8 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean
 
 	from astropy.coordinates import SkyCoord
 	from astroquery.gaia import Gaia
+	import galpy
+	from galpy.util import bovy_coords
 
 	coord = SkyCoord(ra=RA, dec=Dec, unit=(u.degree, u.degree), frame='icrs')
 	j = Gaia.cone_search_async(coord, radius=ConeRadius*u.arcsec)
@@ -1563,7 +1563,7 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean
 		'radial_velocity', 'radial_velocity_error',]
 
 	t = r[Columns].to_pandas()
-	t_sorted = t.sort_values(ComparisonGaiaBand)
+	t_sorted = t.sort_values("parallax", ascending=False)
 
 	result = {}
 	result['PMRA'] = [t_sorted['pmra'].iloc[0]] # mas/year
@@ -1574,8 +1574,8 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean
 	result['PLX_ERROR'] = [t_sorted['parallax_error'].iloc[0]]
 
 	if AbsRV is not None:
-		result['RV_VALUE']  = AbsRV
-		result['RVZ_ERROR'] = e_AbsRV
+		result['RV_VALUE']  = [AbsRV]
+		result['RVZ_ERROR'] = [e_AbsRV]
 	else:
 		result['RV_VALUE'] = [t_sorted['radial_velocity'].iloc[0]] # km/s
 		result['RVZ_ERROR'] = [t_sorted['radial_velocity_error'].iloc[0]] # km/s
@@ -1635,6 +1635,9 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean
 	U += 11.10 # +- 0.72
 	V += 12.24 # +- 0.47
 	W += 7.25 # +- 0.37
+	
+	df = pd.read_csv(os.path.join(CodeDir, 'Data',"Bensby2014_A1.csv"))
+	df = df.set_index('Population').T
 
 
 	def Probability(p):
@@ -1666,6 +1669,7 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60, ComparisonGaiaBand = 'phot_rp_mean
 	output['UVW_bary'] = uvw
 	output['e_UVW_bary'] = error_uvw
 	output['UVW_LSR'] = U, V, W
+	output['e_UVW_LSR'] = np.sqrt(error_uvw[0]**2 + ErrorInLSR[0]), np.sqrt(error_uvw[1]**2 + ErrorInLSR[1]), np.sqrt(error_uvw[2]**2 + ErrorInLSR[2])
 	output['ProbThinDisk'] = Probability("ThinDisk")
 	output['ProbThickDisk'] = Probability("ThickDisk")
 	output['ProbHalo'] = Probability("Halo")
