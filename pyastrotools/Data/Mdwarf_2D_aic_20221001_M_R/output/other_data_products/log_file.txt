@@ -1,0 +1,133 @@
+Using core 28354:
+	___  _________ _______   _______
+	|  \/  || ___ \  ___\ \ / /  _  |
+	| .  . || |_/ / |__  \ V /| | | |
+	| |\/| || | / __| /   \| | | |
+	| |  | || |\ \| |___/ /^\ \ \_/ /
+	\_|  |_/\_| \_\____/\/   \/\___/
+
+	Using core 28354:Started for aic degrees at 2022-10-11 14:54:50.613922, using 8 core/sUsing core 28354:Choosing degree with AIC in symmetric modeUsing core 28354:Using AIC method to estimate the number of degrees of freedom for the weights. Max candidate = 120
+Using core 28396:Running degrees = [5 5]Using core 28397:Running degrees = [11 11]Using core 28398:Running degrees = [17 17]Using core 28399:Running degrees = [23 23]Using core 28400:Running degrees = [29 29]Using core 28403:Running degrees = [47 47]Using core 28402:Running degrees = [41 41]Using core 28401:Running degrees = [35 35]Using core 28396:=========
+Started MLE run at 2022-10-11 14:54:51.205171Using core 28398:=========
+Started MLE run at 2022-10-11 14:54:51.208740Using core 28399:=========
+Started MLE run at 2022-10-11 14:54:51.210505Using core 28400:=========
+Started MLE run at 2022-10-11 14:54:51.212826Using core 28397:=========
+Started MLE run at 2022-10-11 14:54:51.207300Using core 28403:=========
+Started MLE run at 2022-10-11 14:54:51.212810Using core 28401:=========
+Started MLE run at 2022-10-11 14:54:51.216929Using core 28402:=========
+Started MLE run at 2022-10-11 14:54:51.214955Using core 28399:Started Integration at 2022-10-11 14:54:51.223550Using core 28396:Started Integration at 2022-10-11 14:54:51.219174Using core 28398:Started Integration at 2022-10-11 14:54:51.221409Using core 28400:Started Integration at 2022-10-11 14:54:51.224928Using core 28397:Started Integration at 2022-10-11 14:54:51.225831Using core 28402:Started Integration at 2022-10-11 14:54:51.240595Using core 28401:Started Integration at 2022-10-11 14:54:51.238976Using core 28403:Started Integration at 2022-10-11 14:54:51.240848Using core 28396:Finished Integration at 2022-10-11 14:54:52.553606. 
+Calculated the PDF for Integrated beta and normal density.Using core 28396:Optimization run finished at 2022-10-11 14:54:52.566211, with 9 iterations.
+Sum of weights = 0.9999999999999998         
+LogLikelihood = -340.38997070492894, Fractional Error = 0.0009275754926292902
+
+Using core 28396:Running degrees = [53 53]Using core 28396:=========
+Started MLE run at 2022-10-11 14:54:52.603719Using core 28396:Started Integration at 2022-10-11 14:54:52.618926Using core 28397:Finished Integration at 2022-10-11 14:54:55.105311. 
+Calculated the PDF for Integrated beta and normal density.Using core 28397:Optimization run finished at 2022-10-11 14:54:55.110300, with 12 iterations.
+Sum of weights = 0.9999999999999999         
+LogLikelihood = -304.5636298300532, Fractional Error = 0.0009189927575718749
+
+Using core 28397:Running degrees = [59 59]Using core 28397:=========
+Started MLE run at 2022-10-11 14:54:55.116672Using core 28397:Started Integration at 2022-10-11 14:54:55.119985Using core 28398:Finished Integration at 2022-10-11 14:54:57.448758. 
+Calculated the PDF for Integrated beta and normal density.Using core 28398:Optimization run finished at 2022-10-11 14:54:57.464309, with 12 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -288.01752070748114, Fractional Error = 0.0009642844862320257
+
+Using core 28398:Running degrees = [65 65]Using core 28398:=========
+Started MLE run at 2022-10-11 14:54:57.489652Using core 28398:Started Integration at 2022-10-11 14:54:57.496665Using core 28399:Finished Integration at 2022-10-11 14:55:04.478168. 
+Calculated the PDF for Integrated beta and normal density.Using core 28399:Optimization run finished at 2022-10-11 14:55:04.487569, with 12 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -277.7405511735672, Fractional Error = 0.0009994034552049474
+
+Using core 28399:Running degrees = [71 71]Using core 28399:=========
+Started MLE run at 2022-10-11 14:55:04.492363Using core 28399:Started Integration at 2022-10-11 14:55:04.493814Using core 28400:Finished Integration at 2022-10-11 14:55:11.550426. 
+Calculated the PDF for Integrated beta and normal density.Using core 28400:Optimization run finished at 2022-10-11 14:55:11.557755, with 12 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -271.22752160616176, Fractional Error = 0.0009991069262514603
+
+Using core 28400:Running degrees = [77 77]Using core 28400:=========
+Started MLE run at 2022-10-11 14:55:11.562095Using core 28400:Started Integration at 2022-10-11 14:55:11.563539Using core 28401:Finished Integration at 2022-10-11 14:55:14.855871. 
+Calculated the PDF for Integrated beta and normal density.Using core 28401:Optimization run finished at 2022-10-11 14:55:14.865554, with 12 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -266.60120073320587, Fractional Error = 0.0009973691880493711
+
+Using core 28401:Running degrees = [83 83]Using core 28401:=========
+Started MLE run at 2022-10-11 14:55:14.873620Using core 28401:Started Integration at 2022-10-11 14:55:14.877155Using core 28402:Finished Integration at 2022-10-11 14:55:18.502261. 
+Calculated the PDF for Integrated beta and normal density.Using core 28402:Optimization run finished at 2022-10-11 14:55:18.513248, with 13 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -262.4501820266735, Fractional Error = 0.0009219494378588899
+
+Using core 28402:Running degrees = [89 89]Using core 28402:=========
+Started MLE run at 2022-10-11 14:55:18.530417Using core 28402:Started Integration at 2022-10-11 14:55:18.532132Using core 28403:Finished Integration at 2022-10-11 14:55:21.677176. 
+Calculated the PDF for Integrated beta and normal density.Using core 28403:Optimization run finished at 2022-10-11 14:55:21.719585, with 14 iterations.
+Sum of weights = 0.9999999999999999         
+LogLikelihood = -258.7517311511274, Fractional Error = 0.0008684152150809334
+
+Using core 28403:Running degrees = [95 95]Using core 28403:=========
+Started MLE run at 2022-10-11 14:55:21.756036Using core 28403:Started Integration at 2022-10-11 14:55:21.771574Using core 28396:Finished Integration at 2022-10-11 14:55:26.064831. 
+Calculated the PDF for Integrated beta and normal density.Using core 28396:Optimization run finished at 2022-10-11 14:55:26.080113, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -255.75071747636753, Fractional Error = 0.0008880292726518798
+
+Using core 28396:Running degrees = [101 101]Using core 28396:=========
+Started MLE run at 2022-10-11 14:55:26.085722Using core 28396:Started Integration at 2022-10-11 14:55:26.087813Using core 28397:Finished Integration at 2022-10-11 14:55:31.697302. 
+Calculated the PDF for Integrated beta and normal density.Using core 28397:Optimization run finished at 2022-10-11 14:55:31.734510, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -253.15871324261252, Fractional Error = 0.0008896220414741311
+
+Using core 28397:Running degrees = [107 107]Using core 28397:=========
+Started MLE run at 2022-10-11 14:55:31.741714Using core 28397:Started Integration at 2022-10-11 14:55:31.743225Using core 28398:Finished Integration at 2022-10-11 14:55:36.867402. 
+Calculated the PDF for Integrated beta and normal density.Using core 28398:Optimization run finished at 2022-10-11 14:55:36.898043, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -250.88593532601743, Fractional Error = 0.0008856865672173716
+
+Using core 28398:Running degrees = [113 113]Using core 28398:=========
+Started MLE run at 2022-10-11 14:55:36.907533Using core 28398:Started Integration at 2022-10-11 14:55:36.910574Using core 28399:Finished Integration at 2022-10-11 14:55:47.342462. 
+Calculated the PDF for Integrated beta and normal density.Using core 28399:Optimization run finished at 2022-10-11 14:55:47.387885, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -248.87380090417244, Fractional Error = 0.0008724156298168403
+
+Using core 28399:Running degrees = [120 120]Using core 28399:=========
+Started MLE run at 2022-10-11 14:55:47.407886Using core 28399:Started Integration at 2022-10-11 14:55:47.413110Using core 28400:Finished Integration at 2022-10-11 14:55:57.974703. 
+Calculated the PDF for Integrated beta and normal density.Using core 28400:Optimization run finished at 2022-10-11 14:55:58.024293, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -247.06227322684555, Fractional Error = 0.0008662973738981204
+
+Using core 28401:Finished Integration at 2022-10-11 14:56:03.651748. 
+Calculated the PDF for Integrated beta and normal density.Using core 28401:Optimization run finished at 2022-10-11 14:56:03.697697, with 14 iterations.
+Sum of weights = 0.9999999999999999         
+LogLikelihood = -245.41769375165657, Fractional Error = 0.0008636815066813384
+
+Using core 28402:Finished Integration at 2022-10-11 14:56:10.529438. 
+Calculated the PDF for Integrated beta and normal density.Using core 28402:Optimization run finished at 2022-10-11 14:56:10.590824, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -243.9156187986176, Fractional Error = 0.0008614493120344854
+
+Using core 28403:Finished Integration at 2022-10-11 14:56:16.532879. 
+Calculated the PDF for Integrated beta and normal density.Using core 28403:Optimization run finished at 2022-10-11 14:56:16.592340, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -242.53409373048063, Fractional Error = 0.0008596464906084385
+
+Using core 28396:Finished Integration at 2022-10-11 14:56:23.029902. 
+Calculated the PDF for Integrated beta and normal density.Using core 28396:Optimization run finished at 2022-10-11 14:56:23.073437, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -241.25462836663644, Fractional Error = 0.0008586963716217819
+
+Using core 28397:Finished Integration at 2022-10-11 14:56:31.074098. 
+Calculated the PDF for Integrated beta and normal density.Using core 28397:Optimization run finished at 2022-10-11 14:56:31.132275, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -240.06157010995287, Fractional Error = 0.0008601077366511401
+
+Using core 28398:Finished Integration at 2022-10-11 14:56:40.019971. 
+Calculated the PDF for Integrated beta and normal density.Using core 28398:Optimization run finished at 2022-10-11 14:56:40.154999, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -238.9426599475003, Fractional Error = 0.000864362502354024
+
+Using core 28399:Finished Integration at 2022-10-11 14:56:51.568147. 
+Calculated the PDF for Integrated beta and normal density.Using core 28399:Optimization run finished at 2022-10-11 14:56:51.623027, with 14 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -237.7185867628397, Fractional Error = 0.0008720374037632813
+
+Using core 28354:Using AIC to select optimum degrees as = [29 29]
+Using core 28354:Running full dataset MLE before bootstrap
+Using core 28354:Finished full dataset MLE run at 2022-10-11 14:57:09.845077
+Using core 28354:Bootstrap not run since num_boot = 0

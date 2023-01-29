@@ -8,3 +8,4 @@ pyastrotools.egg-info/PKG-INFO
 pyastrotools.egg-info/SOURCES.txt
 pyastrotools.egg-info/top_level.txt
 pyastrotools/NEA/__pycache__/nasa_exoplanet_archive.cpython-39.pyc
+*.pyc

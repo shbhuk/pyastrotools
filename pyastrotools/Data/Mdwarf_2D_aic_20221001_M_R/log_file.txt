@@ -1,0 +1,7 @@
+Using core 28354:=========
+Started MLE run at 2022-10-11 14:56:51.775414Using core 28354:Started Integration at 2022-10-11 14:56:51.780293Using core 28354:Finished Integration at 2022-10-11 14:57:09.740297. 
+Calculated the PDF for Integrated beta and normal density.Using core 28354:Optimization run finished at 2022-10-11 14:57:09.746739, with 12 iterations.
+Sum of weights = 1.0         
+LogLikelihood = -271.22752160616176, Fractional Error = 0.0009991069262514603
+
+Using core 28354:Calculating Joint Distribution for 2 dimensions at 2022-10-11 14:57:09.748310Using core 28354:Finished calculating Joint Distribution for 2 dimensions at 2022-10-11 14:57:09.843386
