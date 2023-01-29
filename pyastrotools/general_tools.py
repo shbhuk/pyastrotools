@@ -276,3 +276,6 @@ def SigmaAntiLog10(y, dy):
 	x = 10**y
 	
 	return dy * x * np.log(10)
+
+def Chi2_to_Normal(Chi2, DoF):
+	return (Chi2 - DoF)/(np.sqrt(2*DoF))
