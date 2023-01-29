@@ -1151,6 +1151,32 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 
 	return TSM
 
+def calculateEclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff):
+	"""
+	Calculate Eclipse Depth
+	INPUTS:
+		wl = Wavelength in um
+		pl_rade = Planetary radius in Earth radii
+		pl_eqt = Equilibrium Temperature in Kelvin
+		st_rad = Stellar Radius in Sol radi
+		st_teff = Effective Temperature in Kelvin
+	OUTPUTS:
+		Depth in ppm
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 26th January 2023
+
+	"""
+	
+	from astropy.modeling import models
+	
+	Rsun2Rearth = u.R_sun.to(u.R_earth)
+	
+	Depth = (1e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*u.K)(wl*u.um) / models.BlackBody(temperature=st_teff*u.K)(wl*u.um)).value
+
+	return Depth
+
+
 
 def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_raderr1=0.0):
 	"""
@@ -1452,7 +1478,8 @@ def CalculateHillRadius(pl_orbsmax, pl_masse, st_mass, pl_orbeccen=0.0):
 	
 	return r_hill.to(u.km).value
 				
-	
+
+Test = r"""	
 pl_orbeccen = 0.1
 pl_rade = 6
 pl_masse = 30
@@ -1462,6 +1489,7 @@ st_mass = 1
 pl_orbeccenerr1 = 0
 
 
+3757
 pl_orbeccen = 0.14
 pl_rade = 12
 pl_masse = 85.3
@@ -1472,12 +1500,23 @@ st_mass = 0.64
 pl_insol = 55.4
 
 
+5205
+pl_orbeccen = 0.02
+pl_orbeccenerr1 = 0.017
+pl_rade = 11.6
+pl_masse = 343
+pl_orbper = 1.63
+st_mass = 0.394
+pl_insol = 49
+pl_orbsmax = 0.0199
+
 redQ = 1e5
 epsilon = 0.0
+"""
 
 
 def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_insol, st_mass, redQ,
-	pl_orbeccenerr1=0.0):
+	pl_orbeccenerr1=0.0, epsilon=0):
 	"""
 	Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
 	
@@ -1600,24 +1639,22 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	plx = result['PLX_VALUE'][0]
 	plxerr = result['PLX_ERROR'][0]
 
-
-	print('l,b :{}, {}'.format(l,b))
-	print('pml,pmb :{}, {}'.format(pml,pmb))
-	print('rv km/s, dist kpc :{}, {}'.format(rv,dist))
+	if verbose:
+		print('l,b: {}, {}'.format(l,b))
+		print('pml,pmb: {}, {}'.format(pml,pmb))
+		print('rv km/s, dist kpc: {}, {}'.format(rv,dist))
 
 	out_uvw = bovy_coords.vrpmllpmbb_to_vxvyvz(rv,
 										  pml,pmb,l,b,dist,
 										  degree=True)
 	out_cov = bovy_coords.cov_dvrpmllbb_to_vxyz(plx,plxerr,rverr,pml,pmb,cov_pmlpmb,l,b,plx=True,degree=True)
 
-	print("U,V,W velocity km/s {:.3f} {:.3f} {:.3f} ".format(*out_uvw))
-	print("U,V,W velocity uncertainties km/s = {:.3f} {:.3f} {:.3f}".format(*np.diag(np.sqrt(out_cov))))
+	if verbose:
+		print("U,V,W velocity km/s {:.3f} {:.3f} {:.3f} ".format(*out_uvw))
+		print("U,V,W velocity uncertainties km/s = {:.3f} {:.3f} {:.3f}".format(*np.diag(np.sqrt(out_cov))))
 
 	uvw = out_uvw
 	error_uvw = np.diag(np.sqrt(out_cov))
-
-	if verbose:
-		print("{:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}".format(uvw[0],error_uvw[0], uvw[1],error_uvw[1], uvw[2],error_uvw[2]))
 
 	LSRVelocity = [11.1, 12.24, 7.25]
 	ErrorInLSR = [0.72, 0.47, 0.37]
