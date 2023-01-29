@@ -39,7 +39,9 @@ except:
 	print("Unable to load HPF,  NEID, KPF or MAROON-X ETCs")
 
 try:
-	from mrexo.predict import predict_from_measurement
+	# from mrexo.predict import predict_from_measurement
+	from mrexo.mle_utils_nd import calculate_conditional_distribution
+
 except:
 	print("Unable to import MRExo")
 
@@ -827,9 +829,26 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 				pl_masseerr1 = 0
 				pl_masse = 10**pl_masse
 		else:
-			results = predict_from_measurement(measurement=pl_rade, measurement_sigma=pl_radeerr1, predict='Mass', use_lookup=False, qtl=qtl)
-			pl_masse = results[0]
-			pl_masseerr1 = results[0]-results[1][16]
+			# results = predict_from_measurement(measurement=pl_rade, measurement_sigma=pl_radeerr1, predict='Mass', use_lookup=False, qtl=qtl)
+			# pl_masse = results[0]
+			# pl_masseerr1 = results[0]-results[1][16]
+
+			save_path = os.path.join(Location, 'Data', 'Mdwarf_2D_aic_20221001_M_R')
+
+			deg_per_dim = np.loadtxt(os.path.join(save_path, 'output', 'deg_per_dim.txt')).astype(int)
+			DataDict = np.load(os.path.join(save_path, 'input', 'DataDict.npy'), allow_pickle=True).item()
+			DataSequences = np.loadtxt(os.path.join(save_path, 'output', 'other_data_products', 'DataSequences.txt'))
+			weights = np.loadtxt(os.path.join(save_path, 'output', 'weights.txt'))
+			JointDist = np.load(os.path.join(save_path, 'output', 'JointDist.npy'), allow_pickle=True)
+			ConditionString = 'm|r'
+			LogMeasurementDict =  {'r':[np.log10([pl_rade]),  np.reshape(np.repeat(np.nan, 2), (1, 2))]}
+
+			ConditionalDist, MeanPDF, VariancePDF = calculate_conditional_distribution(ConditionString, DataDict, weights, deg_per_dim,
+				JointDist, LogMeasurementDict)
+			LinearVariancePDF = (10**MeanPDF * np.log(10))**2 * VariancePDF
+			LinearSigmaPDF = np.sqrt(LinearVariancePDF)
+			pl_masse = 10**MeanPDF[0]
+			pl_masseerr1 = LinearSigmaPDF[0]
 
 
 		if return_mass_only:
