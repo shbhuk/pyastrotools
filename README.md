@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/362150934.svg)](https://zenodo.org/badge/latestdoi/362150934)
+
+
 # pyastrotools
  Repository with set of astronomy related functions for Shubham Kanodia
  If you use this code in your research, please double-check with Shubham Kanodia if the function/code is up-to-date since this repository is in constant flux, and cite this repository through the GitHub URL.
