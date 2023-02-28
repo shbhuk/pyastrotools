@@ -279,3 +279,14 @@ def SigmaAntiLog10(y, dy):
 
 def Chi2_to_Normal(Chi2, DoF):
 	return (Chi2 - DoF)/(np.sqrt(2*DoF))
+
+def GetCDF(Data, NBins=100):
+	'''
+	Get the Cumultative Density Function for a dataset with NBins
+	'''
+	count, bins = np.histogram(Data, bins=NBins)
+	pdf = count/np.sum(count)
+	cdf = np.cumsum(pdf)
+
+	return bins, cdf
+	
