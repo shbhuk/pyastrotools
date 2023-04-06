@@ -15,45 +15,58 @@ RV calculation functions -
 1. rv_magnitude - Calculate RV signal using Semi major axis
 2.rv_magnitude_period - Calculate RV signal using Period
 3.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
-4.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
 
 Spectral utilities - 
 1. change_spectral_bin - Change dnu to dlambda or vice versa
 2. wav_airtovac - Convert wavelength air to vacuum
 3. wav_vactoair - Convert wavelength vacuum to air
 
-Stellar parameter scaling relations - 
-2. Mdwarf_m_from_ks_Mann2015( - Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
-1. Mdwarf_r_from_ks_Mann2015( - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
-3. Mdwarf_r_from_ks_Mann2015(_feh- Calculate Mdwarf radius from Teff from eqn 4
-3. Mann2015_mdwarf_r_from_teff - Calculate Mdwarf radius from Teff
-3. Mdwarf_r_from_teff_feh_Mann2015 - Calculate Mdwarf radius from Teff and FeH
-4. Mdwarf_teff_from_r_Mann2015 - Calculate Mdwarf Teff from radius
-5. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
-6. PhotometricMetallicity_Bonfils2005 - Use the photometric relation (Eqn 1) from Bonfils et al. 2005 to calculate metallicity
-7. PhotometricMetallicity_JohnsonApps2009 - Use the photometric relation from Johnson and Apps 2009 to calculate metallicity
-8. PhotometricMetallicity_SchlaufmanLaughlin2010 - Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
-9. PhotometricMetallicity_Neves2012 - Use Eqn 3 from Neves et al. 2012 to calculate the metallicity for M dwarfs
+Stellar parameter scaling relations -
+1.  Mdwarf_teff_from_AbsMag_Rabus2019 -  Calculates Teff based on a cubic polynomial from M_G (absolute Gaia mag) from Rabus 2019
+2.  Mdwarf_teff_from_r_Mann2015 - Interpolate the Mann r_from_teff function
+3.  Mdwarf_r_from_teff_Mann2015 - Get M-dwarf radius from effective temperature
+4.  Mdwarf_r_from_teff_feh_Mann2015 - Get M-dwarf radius from effective temperature and metallicity
+5. Mdwarf_r_from_ks_Mann2015 - Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
+6. Mdwarf_r_from_ks_feh_Mann2015 - 	Calculate the stellar radius from absolute K mag and Fe/H from eqn 5 in Mann 2015
+7. Mdwarf_m_from_ks_Mann2015 - Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
+8. Mdwarf_m_from_ks_Mann2019 - Calculate the stellar mass from absolute K mag from eqn 4 in Mann 2019
+9. Mdwarf_m_from_r_Schweitzer2019 - Calculate a stellar mass based on the empirically calibrated sample from Schweitzer 2019 (Eqn 6)
+10. Mdwarf_m_from_AbsMag_Delfosse2000 - Calculate the stellar mass from absolute  V, J, H, K magnitues from Delfosse 2000
+11. Mdwarf_m_from_AbsMag_Benedict2016 - Calculate the stellar mass from absolute K mag from eqn 11 in Benedict 2016
+12. Mdwarf_AbsMag_from_m_Benedict2016 - Calculate absolute K and V mag from stellar mass using Eqn 10 in Benedict 2016.
+13. PhotometricMetallicity_Bonfils2005 - Use the photometric relation (Eqn 1) from Bonfils et al. 2005 to calculate metallicity
+14. PhotometricMetallicity_JohnsonApps2009 - Use the photometric relation from Johnson and Apps 2009 to calculate metallicity
+15. PhotometricMetallicity_SchlaufmanLaughlin2010 - Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
+16. PhotometricMetallicity_Neves2012 - Use Eqn 3 from Neves et al. 2012 to calculate the metallicity for M dwarfs
+17. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
 
-General Functions - 
-1. get_stellar_data_and_mag - 	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
+
+Query Functions - 
+1. _QuerySimbad -  Function to query Simbad for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
+2. _QueryTIC - Query the TIC catalogue
+3. _QueryGaia - Query the GAIA catalogue
+4. get_stellar_data_and_mag - 	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
+5. GetUVW_Membership - Get UVW membership using galpy. Assumes the brightest thing within the 60" is the target star
 
 Exoplanet specific functions - 
 1. calculate_stellar_luminosity - Calculate Stellar luminosity from Radius and Temperature
 2. calculate_insolation_flux - Calculate insolation flux on a planet
 3. calculate_semi_major_axis - Calculate semi major axis for planet
-4. calculate_orbvelocity - Calculate orbital velocity from period, or vice versa.
-5. calculate_orbperiod - Calculate orbital period given primary stellar mass and semi major axis
-6. calculate_eqtemperature = Calculate equilibrium temperature
-7. calculate_TSM - Calculate the transmission spectroscopy metric from Kempton 2018
-8. CalculateScaleHeight - Calculate planetary scale height 
-9. CalculateSurfaceGravity - Calculate surface gravity for a given M and R
-10. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
-11. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
-12. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
-13. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
-14. CalculateHillRadius - Calculate the Hill Radius
-15. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
+4. calculate_surface_gravity - Calculate surface gravity for a given M and R
+5. calculate_orbvelocity - Calculate orbital velocity from period, or vice versa.
+6. calculate_orbperiod - Calculate orbital period given primary stellar mass and semi major axis
+7. calculate_eqtemperature = Calculate equilibrium temperature
+8. calculate_TSM - Calculate the transmission spectroscopy metric from Kempton 2018
+9. calculate_ESM - Calculate Emission Spectroscopy Metric (ESM) from Kempton 2018 (for JWST)
+10. calculate_EclipseDepth - Calculate secondary eclipse depth
+11. CalculateSurfaceGravity
+12. CalculateScaleHeight - Calcualte planetary scale height 
+13. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
+14. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
+15. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
+16. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
+17. CalculateHillRadius - Calculate the Hill Radius
+18. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
 
 '''
 
@@ -276,6 +289,8 @@ def rv_magnitude_period_uncertainty(pl_masse, st_mass, pl_orbper, pl_orbincl=np.
 
 def rv_magnitude_period_autograd(mp,ms,P,i=np.pi/2,e=0.0, dmp=0.0, dms=0.0, dP=0.0, di=0.0, de=0.0):
 	'''
+	Untested
+
 	INPUT:
 		mp - Mass of planet in Earth mass
 		ms - Mass of star in sol mass
@@ -517,11 +532,42 @@ def wav_vactoair(lv):
 
 def Mdwarf_teff_from_AbsMag_Rabus2019(MG):
 	"""
-	Calculates Teff based on a cubic polynomial from M_G (absolute Gaia mag)
+	Calculates Teff based on a cubic polynomial from M_G (absolute Gaia mag) from Rabus 2019
 	"""
 	Teff = ufloat(10171.7, 1449.6) - ufloat(1493.4, 410.8)*MG + ufloat(114.1, 38.3)*(MG**2) - ufloat(3.2, 1.2)*(MG**3)
 	
 	return Teff
+
+
+def Mdwarf_teff_from_r_Mann2015(st_rad,plot=False):
+	"""
+	 Interpolate the Mann r_from_teff function
+
+	INPUT:
+		radius in solar radii
+
+	OUTPUT:
+		Teff in K
+
+	NOTES:
+		only valid for 0.125 R_sun and 0.68 R_sun. If not, will return nan
+		
+	from pyastrotools.astro_tools
+	Shubham Kanodia 27th April 2021
+		
+	"""
+	m = (st_rad>0.125)&(st_rad<0.68)
+	if np.sum(~m)>0:
+		print('Using {} elements and {} are nans'.format(np.sum(m),np.sum(~m)))
+
+	_T = np.linspace(2700,4200) # Mann sample
+	_R = Mdwarf_r_from_teff_Mann2015(_T)
+	teffs = np.ones(np.size(st_rad))*np.nan
+	teffs[m] = interp1d(_R,_T,kind='linear')(st_rad[m])
+	if plot:
+		fig, ax = plt.subplots()
+		ax.plot(teffs,st_rad,'k.')
+	return teffs
 
 def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 	"""
@@ -565,7 +611,7 @@ def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 
 def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 	"""
-	Get M-dwarf radius from effective temperature
+	Get M-dwarf radius from effective temperature and metallicity
 
 	INPUT:
 		Effective temperature in K. Has to be between 2700K and 4200K
@@ -601,35 +647,6 @@ def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 	return R
 
 
-def Mdwarf_teff_from_r_Mann2015(st_rad,plot=False):
-	"""
-	Interpolates the mdwarf_r_from_teff function
-
-	INPUT:
-		radius in solar radii
-
-	OUTPUT:
-		Teff in K
-
-	NOTES:
-		only valid for 0.125 R_sun and 0.68 R_sun. If not, will return nan
-		
-	from pyastrotools.astro_tools
-	Shubham Kanodia 27th April 2021
-		
-	"""
-	m = (st_rad>0.125)&(st_rad<0.68)
-	if np.sum(~m)>0:
-		print('Using {} elements and {} are nans'.format(np.sum(m),np.sum(~m)))
-
-	_T = np.linspace(2700,4200) # Mann sample
-	_R = Mdwarf_r_from_teff_Mann2015(_T)
-	teffs = np.ones(np.size(st_rad))*np.nan
-	teffs[m] = interp1d(_R,_T,kind='linear')(st_rad[m])
-	if plot:
-		fig, ax = plt.subplots()
-		ax.plot(teffs,st_rad,'k.')
-	return teffs
 
 def Mdwarf_r_from_ks_Mann2015(AbsK):
 	"""
@@ -663,16 +680,20 @@ def Mdwarf_r_from_ks_feh_Mann2015(AbsK, FeH=None):
 	
 	return radius
 
-def Mdwarf_m_from_r_Schweitzer2019(radius):
+def Mdwarf_m_from_ks_Mann2015(AbsK):
 	"""
-	Calculate a stellar mass based on the empirically calibrated sample from Schweitzer 2019 (Eqn 6)
+	Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
+	Typical scatter in mass is ~??%
 	"""
-
-	a = ufloat(-0.0240, 0.0076)
-	b = ufloat(1.055, 0.017)
 	
-	return a + b*radius
+	a = 0.5858
+	b = 0.3872
+	c = - 0.1217 
+	d = 0.0106
+	e = -2.7262 * 1e-4
 	
+	mass = a + b*AbsK + c*(AbsK**2) + d*(AbsK**3)+ e*(AbsK**4)
+	return mass
 
 def Mdwarf_m_from_ks_Mann2019(AbsK):
 	"""
@@ -687,6 +708,17 @@ def Mdwarf_m_from_ks_Mann2019(AbsK):
 
 	return 10**M
 
+
+def Mdwarf_m_from_r_Schweitzer2019(radius):
+	"""
+	Calculate a stellar mass based on the empirically calibrated sample from Schweitzer 2019 (Eqn 6)
+	"""
+
+	a = ufloat(-0.0240, 0.0076)
+	b = ufloat(1.055, 0.017)
+	
+	return a + b*radius
+	
 
 def Mdwarf_m_from_AbsMag_Delfosse2000(AbsK=None, AbsH=None, AbsJ=None, AbsV=None):
 	"""
@@ -781,23 +813,6 @@ def Mdwarf_AbsMag_from_m_Benedict2016(StMass):
 	return AbsK, AbsV
 	
 
-
-	
-def Mdwarf_m_from_ks_Mann2015(AbsK):
-	"""
-	Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
-	Typical scatter in mass is ~??%
-	"""
-	
-	a = 0.5858
-	b = 0.3872
-	c = - 0.1217 
-	d = 0.0106
-	e = -2.7262 * 1e-4
-	
-	mass = a + b*AbsK + c*(AbsK**2) + d*(AbsK**3)+ e*(AbsK**4)
-	return mass
-	
 def PhotometricMetallicity_Bonfils2005(V, K, MK):
 	"""
 	Use Eqn 1 from Bonfils et al. 2005 to calculate the metallicity for M dwarfs
@@ -1151,33 +1166,6 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 
 	return TSM
 
-def calculateEclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff):
-	"""
-	Calculate Eclipse Depth
-	INPUTS:
-		wl = Wavelength in um
-		pl_rade = Planetary radius in Earth radii
-		pl_eqt = Equilibrium Temperature in Kelvin
-		st_rad = Stellar Radius in Sol radi
-		st_teff = Effective Temperature in Kelvin
-	OUTPUTS:
-		Depth in ppm
-
-	from pyastrotools.astro_tools
-	Shubham Kanodia 26th January 2023
-
-	"""
-	
-	from astropy.modeling import models
-	
-	Rsun2Rearth = u.R_sun.to(u.R_earth)
-	
-	Depth = (1e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*u.K)(wl*u.um) / models.BlackBody(temperature=st_teff*u.K)(wl*u.um)).value
-
-	return Depth
-
-
-
 def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_raderr1=0.0):
 	"""
 	Calculate Emission Spectroscopy Metric (ESM) from Kempton 2018 (for JWST)
@@ -1205,6 +1193,32 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 	ESM = (4.29e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*1.10*u.K)(7.5*u.um) / models.BlackBody(temperature=st_teff*u.K)(7.5*u.um)).value *  (10**(-st_k/5))
 
 	return ESM
+
+
+def calculate_EclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff):
+	"""
+	Calculate Eclipse Depth
+	INPUTS:
+		wl = Wavelength in um
+		pl_rade = Planetary radius in Earth radii
+		pl_eqt = Equilibrium Temperature in Kelvin
+		st_rad = Stellar Radius in Sol radi
+		st_teff = Effective Temperature in Kelvin
+	OUTPUTS:
+		Depth in ppm
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 26th January 2023
+
+	"""
+	
+	from astropy.modeling import models
+	
+	Rsun2Rearth = u.R_sun.to(u.R_earth)
+	
+	Depth = (1e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*u.K)(wl*u.um) / models.BlackBody(temperature=st_teff*u.K)(wl*u.um)).value
+
+	return Depth
 
 
 def CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=0.0, pl_radeerr1=0.0):
@@ -1575,6 +1589,7 @@ def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_ins
 def GetUVW_Membership(RA, Dec, ConeRadius=60, 
 	AbsRV=None, e_AbsRV=None, verbose=True):
 	'''
+	Get UVW membership using galpy
 	Assumes the brightest thing within the 60" is the target star
 
 	Inputs:
