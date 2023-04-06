@@ -841,14 +841,17 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 			weights = np.loadtxt(os.path.join(save_path, 'output', 'weights.txt'))
 			JointDist = np.load(os.path.join(save_path, 'output', 'JointDist.npy'), allow_pickle=True)
 			ConditionString = 'm|r'
+			if pl_rade > 12: pl_rade = 12
 			LogMeasurementDict =  {'r':[np.log10([pl_rade]),  np.reshape(np.repeat(np.nan, 2), (1, 2))]}
-
-			ConditionalDist, MeanPDF, VariancePDF = calculate_conditional_distribution(ConditionString, DataDict, weights, deg_per_dim,
-				JointDist, LogMeasurementDict)
-			LinearVariancePDF = (10**MeanPDF * np.log(10))**2 * VariancePDF
-			LinearSigmaPDF = np.sqrt(LinearVariancePDF)
-			pl_masse = 10**MeanPDF[0]
-			pl_masseerr1 = LinearSigmaPDF[0]
+			try:	
+				ConditionalDist, MeanPDF, VariancePDF = calculate_conditional_distribution(ConditionString, DataDict, weights, deg_per_dim,
+					JointDist, LogMeasurementDict)
+				LinearVariancePDF = (10**MeanPDF * np.log(10))**2 * VariancePDF
+				LinearSigmaPDF = np.sqrt(LinearVariancePDF)
+				pl_masse = 10**MeanPDF[0]
+				pl_masseerr1 = LinearSigmaPDF[0]
+			except:
+				print("MRExo failed"); pl_masse=np.nan; pl_masseerr1=np.nan
 
 
 		if return_mass_only:
