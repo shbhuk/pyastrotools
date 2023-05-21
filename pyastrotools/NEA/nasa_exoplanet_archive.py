@@ -23,7 +23,7 @@ import pytz
 
 
 class NEA(object):
-	def __init__(self, DownloadPS=False):
+	def __init__(self, DownloadPS=True):
 		"""
 		DownloadPS: If True, will download the entire Planetary Systems CSV, this includes multiple rows for each system. Set default_flag=1 to pick default (smaller csv).
 		If False, will download the Planetary Systems Composite Parameters, which consists of composite parameters from multiple sources for each planet (larger csv).

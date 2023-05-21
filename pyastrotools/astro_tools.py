@@ -62,6 +62,7 @@ Exoplanet specific functions -
 11. CalculateSurfaceGravity
 12. CalculateScaleHeight - Calcualte planetary scale height 
 13. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
+13. CalculateCoreMass_Thorngren2016 - Calculate the heavy element content for warm Jupiters from Thorngren 2016
 14. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
 15. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
 16. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
@@ -1358,6 +1359,22 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 		plt.legend()
 		
 	return CoreMass
+
+def CalculateCoreMass_Thorngren2016(QueryMass):
+	"""
+	INPUTS:
+		QueryMass: Total planetary mass (Jupiter mass)
+	OUTPUTS:
+		HeavyElementMass: In Earth masses
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 7th May 2023
+	"""
+
+	return 57.9*(QueryMass/317.8)**(0.61)
+
+
+
 
 def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_orbsmax, pl_orbeccen, Qplanet, Qstar=1e7):
 	"""
