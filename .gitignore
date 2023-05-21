@@ -1,11 +1,15 @@
 
-pyastrotools/__pycache__/*
+/pyastrotools/__pycache__/
 
-pyastrotools.egg-info/*
-pyastrotools/NEA/nasa_archive_exoplanets.csv
+/pyastrotools.egg-info/*
+/pyastrotools/NEA/nasa_archive_exoplanets.csv
 pyastrotools.egg-info/dependency_links.txt
 pyastrotools.egg-info/PKG-INFO
 pyastrotools.egg-info/SOURCES.txt
 pyastrotools.egg-info/top_level.txt
 pyastrotools/NEA/__pycache__/nasa_exoplanet_archive.cpython-39.pyc
 *.pyc
+
+/build/
+/dist/
+/pyastrotools.egg-info/
