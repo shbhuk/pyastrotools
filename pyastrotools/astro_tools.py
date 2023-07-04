@@ -66,8 +66,9 @@ Exoplanet specific functions -
 14. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
 15. CalculateCircTimescales_GoldreichSoter1966 - Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
 16. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
-17. CalculateHillRadius - Calculate the Hill Radius
-18. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
+17. CalculateMdwarfAge_fromProt_Engle2023 - Use the scaling relations from Engle and Guinan 2023 to convert stellar rotation period to age
+18. CalculateHillRadius - Calculate the Hill Radius
+19. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
 
 '''
 
@@ -1482,7 +1483,66 @@ def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
 	
 	return Age.n, Age.s
 		
-		
+
+def CalculateMdwarfAge_fromProt_Engle2023(Prot, ProtError=0.0, MdwarfSpectralSubType=1.0):
+	"""
+	Use the scaling relations from Engle and Guinan 2023 to convert stellar rotation period to age
+	
+	INPUTS:
+		Prot: Rotation period in days
+		ProtError: Rotation period error in days
+		MdwarfSpectralSubType: Spectral Subtype ranging from 0 to 6.5
+	OUTPUTS:
+		Age: Nominal Age (Gyr)
+		Age_Sigma: (Gyr)
+	
+	from pyastrotools.astro_tools
+	Shubham Kanodia 4th July 2023
+	"""
+	
+	Prot = ufloat(Prot, ProtError)
+
+	if MdwarfSpectralSubType <= 2:
+		if Prot < 24.0379:
+			a = ufloat(0.0621, 0.0025)
+			b = ufloat(-1.0437, 0.0394)
+			Age = a*Prot + b
+		else:
+			a = ufloat(0.0621, 0.0025)
+			b = ufloat(-1.0437, 0.0394)
+			c = ufloat(-0.0533, 0.0026)
+			d = ufloat(24.0379, 0.8042)
+			Age = a*Prot + b + c*(Prot - d)
+
+	elif MdwarfSpectralSubType <= 4:
+		if Prot < 24.1823:
+			a = ufloat(0.0561, 0.0012)
+			b = ufloat(-0.8900, 0.0188)
+			Age = a*Prot + b
+		else:
+			a = ufloat(0.0561, 0.0012)
+			b = ufloat(-0.8900, 0.0188)
+			c = ufloat(-0.0521, 0.0013)
+			d = ufloat(24.1823,0.4384)
+			Age = a*Prot + b + c*(Prot - d)
+
+	elif MdwarfSpectralSubType <= 6.5:
+		if Prot < 25.4500:
+			a = ufloat(0.0251, 0.0022)
+			b = ufloat(-0.1615, 0.0309)
+			Age = a*Prot + b
+		else:
+			a = ufloat(0.0251, 0.0022)
+			b = ufloat(-0.1615, 0.0309)
+			c = ufloat(-0.0212, 0.0022)
+			d = ufloat(25.4500,2.4552)
+			Age = a*Prot + b + c*(Prot - d)
+	
+	else: print("M dwarf Spectral Type < 6.5"); return None, None
+	
+	return (10**Age).n, (10**Age).s
+
+
 def CalculateHillRadius(pl_orbsmax, pl_masse, st_mass, pl_orbeccen=0.0):
 	"""
 	Calculate the Hill Radius
