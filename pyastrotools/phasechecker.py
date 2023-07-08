@@ -24,9 +24,31 @@ Dec = 13.273706
 pl_tranmid = 2459553.71670012
 pl_orbper = 20.35829214
 
-QueryStartDate = start_query = Time(datetime.datetime(2023, 10, 8), format='datetime')
-QueryEndDate = start_query = Time(datetime.datetime(2023, 10, 29), format='datetime')
-QueryPhases = [[0.20, 0.30], [0.70, 0.80], [0.4, 0.6], [0.85, 0.95], [0.05, 0.15]]
+pl_name = "TOI-5349 b"
+RA = 52.71257
+Dec = 20.879628
+pl_tranmid = 2459475.36817946
+pl_orbper = 3.31794591
+
+# Run 1
+QueryStartDate = start_query = Time(datetime.datetime(2023, 9, 4), format='datetime')
+QueryEndDate = start_query = Time(datetime.datetime(2023, 9, 13), format='datetime')
+
+
+# Run 2
+# QueryStartDate = start_query = Time(datetime.datetime(2023, 9, 17), format='datetime')
+# QueryEndDate = start_query = Time(datetime.datetime(2023, 10, 2), format='datetime')
+
+# Run 3
+# QueryStartDate = start_query = Time(datetime.datetime(2023, 10, 8), format='datetime')
+# QueryEndDate = start_query = Time(datetime.datetime(2023, 10, 29), format='datetime')
+
+# Run 4
+# QueryStartDate = start_query = Time(datetime.datetime(2023, 11, 19), format='datetime')
+# QueryEndDate = start_query = Time(datetime.datetime(2024, 1, 2), format='datetime')
+
+
+QueryPhases = [[0.05, 0.15], [0.20, 0.30], [0.30, 0.40], [0.40, 0.60], [0.60, 0.70], [0.70, 0.80], [0.85, 0.95]]
 
 ObsName = "Gemini North"
 MinMoonSeparation = 25
@@ -46,8 +68,8 @@ for QueryPhase in QueryPhases:
 	FileName = os.path.join(PlotDirectory, '{}_{}_Phase{}_{}_{}.pdf'.format(ObsName.replace(' ', ''), pl_name.replace(' ', ''), QueryPhase[0], QueryPhase[1], QueryStartDate.isot[:-13].replace('-', '')))
 	if PlotPhase: pp = PdfPages(FileName)
 
-	for i in range(round(QueryEndDate.jd - QueryStartDate.jd)):
-		DateRange = np.linspace(QueryStartDate, QueryEndDate, round(QueryEndDate.jd - QueryStartDate.jd))
+	for i in range(round(QueryEndDate.jd - QueryStartDate.jd)+1):
+		DateRange = np.linspace(QueryStartDate, QueryEndDate, round(QueryEndDate.jd - QueryStartDate.jd)+1)
 		ObsTime = DateRange[i] # Cycle through each date
 
 		UTCOffset, Timezone = find_utc_offset(Location, ObsTime)
@@ -116,7 +138,7 @@ for QueryPhase in QueryPhases:
 			ax1.text(-4, 31, 'Airmass 2.0', c='w', fontsize=15)
 			ax1.legend(loc='upper left')
 
-			ax1.set_title('{}; {}; ObsName = {}\nLocal Midnight at UTC {}. JD {}. \nMoon Illum = {}%. Min. Moon Sep = {} deg\nOrbital Period = {:.2f} dPhase at Max Alt = {:.03f}'.format(pl_name, target.to_string('hmsdms'), ObsName, Midnight.datetime,np.round(Midnight.jd,2),
+			ax1.set_title('{}; {}; ObsName = {}\nLocal Midnight at UTC {}. JD {}. \nMoon Illum = {}%. Min. Moon Sep = {} deg\nOrbital Period = {:.2f} d, Phase at Max Alt = {:.03f}'.format(pl_name, target.to_string('hmsdms'), ObsName, Midnight.datetime,np.round(Midnight.jd,2),
 																												np.round(np.max(MoonIllumination)*100, 0), np.round(np.min(MoonSeparation), 2), pl_orbper, PhaseObs[np.argmax(TargetAltAz.alt.value)]), fontsize=15, pad = 5)
 			ax1.fill_between(DeltaMidnight.to('hr').value, 0, 90,
 							SunAltAz.alt < -0*u.deg, color='0.7', zorder=0)
