@@ -6,7 +6,7 @@ def readme():
 
 
 setup(name='pyastrotools',
-      version='0.3',
+      version='0.4dev',
       description='Set of tools useful for astronomy and optics',
       long_description=readme(),
       url='https://github.com/shbhuk/pyastrotools',

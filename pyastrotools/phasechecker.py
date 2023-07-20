@@ -99,8 +99,9 @@ for QueryPhase in QueryPhases:
 		SunMask = SunAltAz.alt.value < -18 # 18 degree Nautical Twilight and thereafter
 		MoonMask = MoonSeparation > MinMoonSeparation
 		AltitudeMask = (TargetAltAz.alt.value > MinAltitude) & (TargetAltAz.alt.value < MaxAltitude)
+		DurationMask = (Interval.value*24*60) > 40
 
-		MasterMask = PhaseMask & MoonMask & SunMask & AltitudeMask
+		MasterMask = PhaseMask & MoonMask & SunMask & AltitudeMask & DurationMask
 
 		SurvivingTimes = TimeObs[MasterMask]
 
@@ -138,7 +139,7 @@ for QueryPhase in QueryPhases:
 			ax1.text(-4, 31, 'Airmass 2.0', c='w', fontsize=15)
 			ax1.legend(loc='upper left')
 
-			ax1.set_title('{}; {}; ObsName = {}\nLocal Midnight at UTC {}. JD {}. \nMoon Illum = {}%. Min. Moon Sep = {} deg\nOrbital Period = {:.2f} d, Phase at Max Alt = {:.03f}'.format(pl_name, target.to_string('hmsdms'), ObsName, Midnight.datetime,np.round(Midnight.jd,2),
+			ax1.set_title('{}; {}; ObsName = {}\nLocal Midnight at UTC {}. JD {}. \nMoon Illum = {}%. Min. Moon Sep = {} deg\nOrbital Period = {:.2f} d, Phase at Max Alt = {:.03f}'.format(pl_name, Target.to_string('hmsdms'), ObsName, Midnight.datetime,np.round(Midnight.jd,2),
 																												np.round(np.max(MoonIllumination)*100, 0), np.round(np.min(MoonSeparation), 2), pl_orbper, PhaseObs[np.argmax(TargetAltAz.alt.value)]), fontsize=15, pad = 5)
 			ax1.fill_between(DeltaMidnight.to('hr').value, 0, 90,
 							SunAltAz.alt < -0*u.deg, color='0.7', zorder=0)
