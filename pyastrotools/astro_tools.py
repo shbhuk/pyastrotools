@@ -1586,7 +1586,7 @@ pl_rade = 12
 pl_masse = 85.3
 pl_orbper = 3.438
 pl_orbsmax = 0.03845
-pl_orbeccenerr1 = 0.06
+pl_orbeccenerr1 = 0.00
 st_mass = 0.64
 pl_insol = 55.4
 
@@ -1644,7 +1644,7 @@ def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_ins
 	
 	n = 2*np.pi/pl_orbper
 	
-	K = (3*n/2) * (2/(3*redQ)) * (ac.G*st_mass*st_mass/pl_rade) * ((pl_rade/pl_orbsmax)**6)
+	K = (3*n/2) * (3/(2*redQ)) * (ac.G*st_mass*st_mass/pl_rade) * ((pl_rade/pl_orbsmax)**6)
 	K = K.to(u.W)
 	
 	L_tide = 2*K*(N_a_e - (N_e*N_e*2*(np.cos(np.deg2rad(epsilon))**2))/(Omega_e * (1 + (np.cos(np.deg2rad(epsilon))**2))))
