@@ -1650,7 +1650,7 @@ def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_ins
 	L_tide = 2*K*(N_a_e - (N_e*N_e*2*(np.cos(np.deg2rad(epsilon))**2))/(Omega_e * (1 + (np.cos(np.deg2rad(epsilon))**2))))
 	
 	# 1360 W/m2 is the solar flux constant
-	L_irr = pl_insol * (1360*u.W/(u.m**2)) * (4*np.pi*pl_rade**2)
+	L_irr = pl_insol * (1360*u.W/(u.m**2)) * (2*np.pi*pl_rade**2)
 	L_irr = L_irr.to(u.W)
 	
 	T_tides = ((L_tide / (ac.sigma_sb * (pl_rade**2) * (4*np.pi)) )**(1/4)).to(u.K)
