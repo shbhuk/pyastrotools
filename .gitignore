@@ -26,3 +26,17 @@ build/lib/pyastrotools/astro_tools.py
 build/lib/pyastrotools/astro_flux_calc.py
 build/lib/pyastrotools/__init__.py
 *.pyc
+pyastrotools/Data/bt-settl/lte028-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte029-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte030-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte031-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte032-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte033-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte034-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte035-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte036-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte037-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte038-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte039-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/Data/bt-settl/lte040-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
+pyastrotools/NEA/__pycache__/nasa_exoplanet_archive.cpython-39.pyc

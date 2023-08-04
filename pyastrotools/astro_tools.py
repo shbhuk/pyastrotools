@@ -69,6 +69,8 @@ Exoplanet specific functions -
 17. CalculateMdwarfAge_fromProt_Engle2023 - Use the scaling relations from Engle and Guinan 2023 to convert stellar rotation period to age
 18. CalculateHillRadius - Calculate the Hill Radius
 19. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
+20. mass_100_percent_iron_planet - This is from 100% iron curve of Fortney, Marley and Barnes 2007; solving for logM (base 10) via quadratic formula
+21. radius_100_percent_iron_planet - This is from 100% iron curve from Fortney, Marley and Barnes 2007; solving for logR (base 10) via quadratic formula.
 
 '''
 
@@ -1805,4 +1807,31 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	output['ProbHercules'] = Probability("Hercules")
 
 	return output
+
+
+def mass_100_percent_iron_planet(logRadius):
+	"""
+	This is from 100% iron curve of Fortney, Marley and Barnes 2007; solving for logM (base 10) via quadratic formula.
+	\nINPUT:
+		logRadius : Radius of the planet in log10 units
+	OUTPUT:
+
+		logMass: Mass in log10 units for a 100% iron planet of given radius
+	"""
+
+	Mass_iron = (-0.4938 + np.sqrt(0.4938**2-4*0.0975*(0.7932-10**(logRadius))))/(2*0.0975)
+	return Mass_iron
+
+def radius_100_percent_iron_planet(logMass):
+	"""
+	This is from 100% iron curve from Fortney, Marley and Barnes 2007; solving for logR (base 10) via quadratic formula.
+	\nINPUT:
+		logMass : Mass of the planet in log10 units
+	OUTPUT:
+
+		logRadius: Radius in log10 units for a 100% iron planet of given mass
+	"""
+
+	Radius_iron = np.log10((0.0975*(logMass**2)) + (0.4938*logMass) + 0.7932)
+	return Radius_iron
 
