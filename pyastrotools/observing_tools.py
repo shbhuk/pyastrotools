@@ -41,6 +41,8 @@ except:
 try:
 	# from mrexo.predict import predict_from_measurement
 	from mrexo.mle_utils_nd import calculate_conditional_distribution
+	from mrexo.predict_nd import Mdwarf_InferPlMass_FromPlRadiusStMass
+
 
 except:
 	print("Unable to import MRExo")
@@ -90,7 +92,7 @@ def find_observatory(obstime, obsname, lat=0., longi=0., alt=0., timezone=None):
 
 	obstime - Astropy Time object
 	'''
-	if obsname == 'DOT': # Devasthal Optical Telescope 3.6 m Nainital, India
+	if (obsname == 'DOT') | (obsname == 'MtAbu'): # Devasthal Optical Telescope 3.6 m Nainital, India
 		location = find_location(None, lat, longi, alt)
 		utcoffset = 5.5*u.hour
 		timezone = 'Asia/Kolkata'
@@ -608,7 +610,7 @@ def obs_planning_transit(pl_name, RA, Dec,
 			egress_er = egress + egresserr1
 
 			# Find the alt,az coordinates of target at 100 times evenly spaced
-			midnight = Time(np.floor(ingress.value - 0.3) + 0.5, format='jd') - utcoffset
+			midnight = Time(np.floor(ingress.value ) + 0.5, format='jd') - utcoffset
 
 			MidnightTime.append(midnight)
 
@@ -829,40 +831,19 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 				pl_masseerr1 = 0
 				pl_masse = 10**pl_masse
 		else:
-			# results = predict_from_measurement(measurement=pl_rade, measurement_sigma=pl_radeerr1, predict='Mass', use_lookup=False, qtl=qtl)
-			# pl_masse = results[0]
-			# pl_masseerr1 = results[0]-results[1][16]
-
-			save_path = os.path.join(Location, 'Data', 'Mdwarf_2D_aic_20221001_M_R')
-
-			deg_per_dim = np.loadtxt(os.path.join(save_path, 'output', 'deg_per_dim.txt')).astype(int)
-			DataDict = np.load(os.path.join(save_path, 'input', 'DataDict.npy'), allow_pickle=True).item()
-			DataSequences = np.loadtxt(os.path.join(save_path, 'output', 'other_data_products', 'DataSequences.txt'))
-			weights = np.loadtxt(os.path.join(save_path, 'output', 'weights.txt'))
-			JointDist = np.load(os.path.join(save_path, 'output', 'JointDist.npy'), allow_pickle=True)
-			ConditionString = 'm|r'
-			if pl_rade > 12: pl_rade = 12
-			LogMeasurementDict =  {'r':[np.log10([pl_rade]),  np.reshape(np.repeat(np.nan, 2), (1, 2))]}
-			try:	
-				ConditionalDist, MeanPDF, VariancePDF = calculate_conditional_distribution(ConditionString, DataDict, weights, deg_per_dim,
-					JointDist, LogMeasurementDict)
-				LinearVariancePDF = (10**MeanPDF * np.log(10))**2 * VariancePDF
-				LinearSigmaPDF = np.sqrt(LinearVariancePDF)
-				pl_masse = 10**MeanPDF[0]
-				pl_masseerr1 = LinearSigmaPDF[0]
-			except:
-				print("MRExo failed"); pl_masse=np.nan; pl_masseerr1=np.nan
-
+			results = Mdwarf_InferPlMass_FromPlRadiusStMass(pl_rade=pl_rade, st_mass=st_mass)
+			pl_masse = results[0]
+			pl_masseerr1 = np.nan
 
 		if return_mass_only:
 			return pl_masse, pl_masseerr1
-	else:
-		pl_masseerr1 = 0
+		else:
+			pl_masseerr1 = 0
 
 	NEID_sigma = np.sqrt(NEID_RV_prec(teff=st_teff, vmag = Vmag, exptime = exptime)**2 + NEID_inst_precision**2) # 30m NEID exposure is default
 	HPF_sigma = HPF_ETC(jmag=Jmag,st_teff=st_teff-st_teff%100, exp_time=exptime)
 
-	a = rv_magnitude_period_uncertainty(pl_masse=pl_masse , pl_masseerr1=pl_masseerr1, st_mass=st_mass, st_masserr1=st_masserr1, pl_orbper=pl_orbper/365., pl_orbpererr1=pl_orbpererr1)
+	a = rv_magnitude_period_uncertainty(pl_masse=pl_masse , pl_masseerr1=0, st_mass=st_mass, st_masserr1=st_masserr1, pl_orbper=pl_orbper/365., pl_orbpererr1=pl_orbpererr1)
 
 	K = a.nominal_value
 	K_sigma = a.std_dev

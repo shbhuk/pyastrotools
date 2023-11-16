@@ -40,3 +40,4 @@ pyastrotools/Data/bt-settl/lte038-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
 pyastrotools/Data/bt-settl/lte039-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
 pyastrotools/Data/bt-settl/lte040-5.0-0.0a+0.0.BT-NextGen.7.dat.txt
 pyastrotools/NEA/__pycache__/nasa_exoplanet_archive.cpython-39.pyc
+*.pyc
