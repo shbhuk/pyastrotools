@@ -43,7 +43,7 @@ class NEA(object):
 
 
 		## Read into Astropy Table ##
-		self.archive = pd.read_csv(save_file)
+		self.archive = pd.read_csv(save_file, low_memory=False)
 		
 		if DownloadPS:
 			self.archive = self.archive[self.archive['default_flag'] == 1]
