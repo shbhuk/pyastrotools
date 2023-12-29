@@ -21,7 +21,7 @@ setup(name='pyastrotools',
 		  'pandas',
 		  'openpyxl',
 		   'matplotlib==3.5.2',
-		   'mrexo==1.1.3', # Need this for the mass prediction
+		   'mrexo==1.1.5', # Need this for the mass prediction
 		   # 'mrexo @ git+https://github.com/shbhuk/mrexo.git@n_dimensions_generalization', # Need this for the mass prediction
 		   # 'TESS_MADNESS @ git+https://github.com/gummiks/TESS_MADNESS.git@master', # Need this for ETC
 		   # 'gdr3bcg @ git+https://gitlab.oca.eu/ordenovic/gaiadr3_bcg.git@main' # Unable to get this to work for now :/

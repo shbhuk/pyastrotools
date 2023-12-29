@@ -739,7 +739,7 @@ def obs_planning_transit(pl_name, RA, Dec,
 
 def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1, pl_masse=None,
 		  pl_orbpererr1=0.0, st_masserr1=0.0, pl_radeerr1=np.nan, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
-		  return_mass_only=False, simulation=True, set_seed=0):
+		  return_mass_only=False):
 	'''
 	INPUTS:
 		pl_rade = Planetary radius in Earth Radii (linear)
@@ -756,8 +756,6 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 		return_mass_only = If True, will not calculate semi amplitude ETC, and only return planetary mass.
 		exptime = Exposure time for NEID (seconds). Default is 1800 seconds.
 		NEID_inst_precision = NEID single visit instrument precision to add in quadrature to photon noise (Default: 30 cm/s)
-		simulation = If function is being run for simulated data or real. If simulation, then will perform rejection sampling to estimate
-				the mass of the input radius using MRExo, else will use direct predict function.
 	OUTPUTS:
 		pl_masse = Planetary mass predicted from MRExo, in Earth mass.
 		pl_masseerr1 = Planetary mass uncertainty.
@@ -783,57 +781,10 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 
 	dataset='Mdwarf'
 
-
 	if pl_masse is None:
-		if simulation:
-			# Random sampling
-				results = predict_from_measurement(measurement=pl_rade, predict='Mass',
-													use_lookup=True, qtl=qtl, dataset=dataset)
-				try:
-					result_dir = "C:/Users/shbhu/Documents/GitHub/mrexo/mrexo/datasets/M_dwarfs_20200520"
-					output_location = os.path.join(result_dir, 'output')
-					M_points = np.loadtxt(os.path.join(output_location, 'Y_points.txt'))
-				except:
-					result_dir = "C:/Users/shbhu/Documents/Git/mrexo/mrexo/datasets/M_dwarfs_20200520"
-					output_location = os.path.join(result_dir, 'output')
-					M_points = np.loadtxt(os.path.join(output_location, 'Y_points.txt'))
-
-				cdf = np.log10(results[1])
-				cdf_interp = interp1d(cdf, qtl, bounds_error=False, fill_value = "extrapolate")(M_points)
-
-				# Conditional_plot. PDF is derivative of CDF
-				y = np.diff(cdf_interp) / np.diff(M_points)
-				x = M_points[:-1]
-
-				y_interp = interp1d(x, y)
-
-
-				accepted = 0
-				iters=0
-				while accepted == 0:
-					iters+=1
-
-					x_rand = np.random.uniform(min(x),max(x),1)
-					y_rand = y_interp(x_rand)
-					if y_rand == np.nan:
-						break
-					check_rand = np.random.uniform(0,1,1)
-
-					# print(x_rand, y_rand, check_rand)
-					if check_rand < y_rand:
-						pl_masse = x_rand
-						accepted = 1
-
-					if iters==500:
-						accepted = 1
-						pl_masse = np.nan
-
-				pl_masseerr1 = 0
-				pl_masse = 10**pl_masse
-		else:
-			results = Mdwarf_InferPlMass_FromPlRadiusStMass(pl_rade=pl_rade, st_mass=st_mass)
-			pl_masse = results[0]
-			pl_masseerr1 = np.nan
+		results = Mdwarf_InferPlMass_FromPlRadiusStMass(pl_rade=pl_rade, st_mass=st_mass)
+		pl_masse = results[0][0]
+		pl_masseerr1 = 0.0
 
 		if return_mass_only:
 			return pl_masse, pl_masseerr1
