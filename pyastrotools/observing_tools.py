@@ -771,8 +771,6 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 
 	'''
 
-	if set_seed:
-		np.random.seed(set_seed)
 
 	qtl = np.linspace(0,1,101)
 
