@@ -737,7 +737,7 @@ def obs_planning_transit(pl_name, RA, Dec,
 
 
 
-def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1, pl_masse=None,
+def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=0.6, pl_masse=None,
 		  pl_orbpererr1=0.0, st_masserr1=0.0, pl_radeerr1=np.nan, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
 		  return_mass_only=False):
 	'''
@@ -781,6 +781,7 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=1
 
 	if pl_masse is None:
 		results = Mdwarf_InferPlMass_FromPlRadiusStMass(pl_rade=pl_rade, st_mass=st_mass)
+		if np.isnan(results): return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
 		pl_masse = results[0][0]
 		pl_masseerr1 = 0.0
 
