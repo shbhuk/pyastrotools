@@ -25,17 +25,17 @@ def ScaleArray(x, Bounds=[0,1]):
 
 
 def LinearFit(X, Y, Yerr=None):
-	
+
 	X = X-X[0]
 	arg0 = [np.median(Y)/np.median(X), 0]
 
 	def LinFit(args):
 		m = args[0]
 		c = args[1]
-		
+
 		Model = X*m + c
 		Data = Y
-		
+
 		if Yerr is not None:
 			return (Data-Model)/Yerr
 		else:
@@ -57,9 +57,9 @@ def LinearFit(X, Y, Yerr=None):
 
 	Fit = popt
 	FitError = np.diag(np.sqrt(pcov))
-	
+
 	return Fit, FitError
-	
+
 
 def rebin(arr, new_shape):
 	"""Rebin 2D array arr to shape new_shape by averaging."""
@@ -91,7 +91,7 @@ def binning(bn,arr,flag=False):
 		return new_arr,sd
 	else:
 		return new_arr
-		
+
 
 def download_file_check_staleness(url, time_tolerance, save_file, file_name):
 	"""
@@ -124,7 +124,7 @@ def download_file_check_staleness(url, time_tolerance, save_file, file_name):
 		savefilefromurl(url, save_file)
 		check=True
 	return check
-	
+
 
 def savefilefromurl(url,saveto):
 	'''
@@ -138,15 +138,15 @@ def savefilefromurl(url,saveto):
 		urllib.request.urlretrieve( url,saveto)
 		print("Saved")
 	except (urllib.error.URLError,IOError):
-		print("Unable to save URL")	
+		print("Unable to save URL")
 
 
 def compactString(in_string):
 	'''
 	Enter string, will remove space , '-' hyphen and lower the case.
 	'''
-	return in_string.replace(' ', '').replace('-', '').lower()		
-	
+	return in_string.replace(' ', '').replace('-', '').lower()
+
 
 def GeneralIntegration_Trap(f, x_min, x_max, nsteps, LonSpacing=False, LogSpacing=False):
     """
@@ -159,7 +159,7 @@ def GeneralIntegration_Trap(f, x_min, x_max, nsteps, LonSpacing=False, LogSpacin
         nsteps = Number of steps to use
 
     https://en.wikipedia.org/wiki/Trapezoidal_rule
-    
+
     Written for Astro 530 : Stellar Atmospheres 2019
 
     """
@@ -187,21 +187,21 @@ def GeneralIntegration_Trap(f, x_min, x_max, nsteps, LonSpacing=False, LogSpacin
 
         result = (x_interval/2) * (f_x[0] + 2*np.sum(f_x[1:-1])+ f_x[-1])
 
-    return result	
-    
+    return result
+
 
 def NumericalIntegrate1D(xarray, Matrix, xlimits, UseSimps=False):
 	if UseSimps:
 		Integral = simps(Matrix, xarray)
 	else:
 		Integral = UnivariateSpline(xarray, Matrix).integral(xlimits[0], xlimits[1])
-	return Integral    
+	return Integral
 
 
 def MakeResidualPlots(x, ydata, ymodel, Title='', Xlabel='', Ylabel='', Ymodellabels=''):
 	"""
 	Make residual plot.
-	ydata can be a list of 1D arrays, in which case will plot each one separately. In such case, give names for each dataset in Ydatalabels
+	ymodel can be a list of 1D arrays, in which case will plot each one separately. In such case, give names for each dataset in Ydatalabels
 	"""
 
 	colours = ['b', 'r', 'g', 'maroon']
@@ -229,7 +229,7 @@ def MakeResidualPlots(x, ydata, ymodel, Title='', Xlabel='', Ylabel='', Ymodella
 	axes[1].legend()
 	fig.subplots_adjust(hspace=0.02)
 	# plt.show(block=False)
-	
+
 	return fig
 
 
@@ -254,39 +254,39 @@ def SigmaRatioFunction(x, dx, y, dy):
 
 def SigmaLog(x, dx):
 	"Calculate  dy, where y = log(x)"
-	
+
 	return dx/x
-	
+
 def SigmaAntiLog(y, dy):
 	"Calculate  dx, where y = log(x)"
-	
+
 	x = np.exp(y)
-		
+
 	return dy*x
-	
+
 def SigmaLog10(x, dx):
 	"Calculate  dy, where y = log10(x)"
-	
+
 	return dx/(x*np.log(10))
-	
+
 
 def SigmaAntiLog10(y, dy):
 	"Calculate  dy, where y = log10(x)"
-	
+
 	x = 10**y
-	
+
 	return dy * x * np.log(10)
 
 def Chi2_to_Normal(Chi2, DoF):
 	return (Chi2 - DoF)/(np.sqrt(2*DoF))
 
-def GetCDF(Data, NBins=100):
+def GetCDF(Data, NBins=100, Range=None):
 	'''
 	Get the Cumultative Density Function for a dataset with NBins
 	'''
-	count, bins = np.histogram(Data, bins=NBins)
+	count, bins = np.histogram(Data, bins=NBins, range=Range)
 	pdf = count/np.sum(count)
 	cdf = np.cumsum(pdf)
 
 	return bins, cdf
-	
+

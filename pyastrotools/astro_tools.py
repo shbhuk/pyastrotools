@@ -1,6 +1,6 @@
 
 '''
-Basic Astronomy functions - 
+Basic Astronomy functions -
 1. deg_to_rad() - Convert degree to radians
 2. rad_to_deg() - Convert radians to degrees
 3. dec_to_time() - Convert decimal to sexagesimal
@@ -11,12 +11,12 @@ Basic Astronomy functions -
 8. abs_to_app - Convert absolute magnitude to apparent magnitude
 9. app_to_abs - Convert apparent magnitude to absolute magnitude
 
-RV calculation functions - 
+RV calculation functions -
 1. rv_magnitude - Calculate RV signal using Semi major axis
 2.rv_magnitude_period - Calculate RV signal using Period
 3.rv_magnitude_period_uncertainty - Calculate RV signal using Period, and also calculate error bars
 
-Spectral utilities - 
+Spectral utilities -
 1. change_spectral_bin - Change dnu to dlambda or vice versa
 2. wav_airtovac - Convert wavelength air to vacuum
 3. wav_vactoair - Convert wavelength vacuum to air
@@ -41,14 +41,14 @@ Stellar parameter scaling relations -
 17. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
 
 
-Query Functions - 
+Query Functions -
 1. _QuerySimbad -  Function to query Simbad for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
 2. _QueryTIC - Query the TIC catalogue
 3. _QueryGaia - Query the GAIA catalogue
 4. get_stellar_data_and_mag - 	Function to query Simbad, GAIA and TIC for following stellar information RA, Dec, PMRA, PMDec, Parallax Epoch
 5. GetUVW_Membership - Get UVW membership using galpy. Assumes the brightest thing within the 60" is the target star
 
-Exoplanet specific functions - 
+Exoplanet specific functions -
 1. calculate_stellar_luminosity - Calculate Stellar luminosity from Radius and Temperature
 2. calculate_insolation_flux - Calculate insolation flux on a planet
 3. calculate_semi_major_axis - Calculate semi major axis for planet
@@ -60,7 +60,7 @@ Exoplanet specific functions -
 9. calculate_ESM - Calculate Emission Spectroscopy Metric (ESM) from Kempton 2018 (for JWST)
 10. calculate_EclipseDepth - Calculate secondary eclipse depth
 11. CalculateSurfaceGravity
-12. CalculateScaleHeight - Calcualte planetary scale height 
+12. CalculateScaleHeight - Calcualte planetary scale height
 13. CalculateCoreMass_Fortney2007 - Calculate the core mass based on Fortney 2007
 13. CalculateCoreMass_Thorngren2016 - Calculate the heavy element content for warm Jupiters from Thorngren 2016
 14. CalculateCircTimescales_Jackson2008 - 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
@@ -68,9 +68,10 @@ Exoplanet specific functions -
 16. CalculateMdwarfAge_fromProt_Engle2018 - Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
 17. CalculateMdwarfAge_fromProt_Engle2023 - Use the scaling relations from Engle and Guinan 2023 to convert stellar rotation period to age
 18. CalculateHillRadius - Calculate the Hill Radius
-19. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
+19. CalculateTidalLuminosity - Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)
 20. mass_100_percent_iron_planet - This is from 100% iron curve of Fortney, Marley and Barnes 2007; solving for logM (base 10) via quadratic formula
 21. radius_100_percent_iron_planet - This is from 100% iron curve from Fortney, Marley and Barnes 2007; solving for logR (base 10) via quadratic formula.
+22. ConvertMetallicityNumberFractionAndMassFraction - Convert between metallicity number and mass fractions
 
 '''
 
@@ -106,7 +107,7 @@ def deg_to_rad(d):
 	'''
 	Input: Angle in degrees
 	Output: Angle in radians
-	
+
 	Shubham Kanodia 27th April 2021
 	'''
 
@@ -116,7 +117,7 @@ def rad_to_deg(r):
 	'''
 	Input: Angle in radians
 	Output: Angle in degrees
-	
+
 	Shubham Kanodia 27th April 2021
 	'''
 
@@ -146,7 +147,7 @@ def time_to_dec(d,m,s):
 		Degrees, Minutes, Seconds
 	Output:
 		Decimal angle
-				
+
 	Shubham Kanodia 27th April 2021
 	'''
 
@@ -169,9 +170,9 @@ def galactic_to_eq_declination(l,b,l_0,delta_0):
 
 def galactic_to_eq_ra(l,b,delta,l_0,alpha_0):
 	'''
-	
+
 	Returns RA in degrees, and hours
-	
+
 	Shubham Kanodia 27th April 2021
 	'''
 
@@ -189,7 +190,7 @@ def ra_dec_difference(delta_1,delta_2,alpha_1,theta):
 	'''
 	Distance between two RA,Dec coordinates
 	All in degrees
-	
+
 	Shubham Kanodia 27th April 2021
 	'''
 
@@ -250,7 +251,7 @@ def rv_magnitude_period(pl_masse, st_mass, pl_orbper, pl_orbincl=np.pi/2, pl_orb
 
 	OUTPUT:
 		RV in m/s
-		
+
 
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
@@ -275,10 +276,10 @@ def rv_magnitude_period_uncertainty(pl_masse, st_mass, pl_orbper, pl_orbincl=np.
 
 	OUTPUT:
 		RV in m/s
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	'''
 
 	pl_masse = ufloat(pl_masse , pl_masseerr1)
@@ -306,7 +307,7 @@ def rv_magnitude_period_autograd(mp,ms,P,i=np.pi/2,e=0.0, dmp=0.0, dms=0.0, dP=0
 
 	OUTPUT:
 		RV in m/s
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
 	'''
@@ -410,12 +411,12 @@ def _QuerySimbad(Name, ReturnAll=False):
 def _QueryTIC(Name, Radius=2):
 	"""
 	Query the TIC Catalogue
-	
+
 	Name: Name to query catalogue. For example 'Proxima' or 'TIC 172370679'
 	Radius: Radius in arcseconds to query
 	"""
 	_d = Catalogs.query_object(Name.replace(' ', '').replace('-', '').lower(), radius=Radius*u.arcsec, catalog="TIC").to_pandas()
-	
+
 	return _d
 
 
@@ -429,7 +430,7 @@ def _QueryGaia(coord, Radius=20):
 
 	j = Gaia.cone_search_async(coord, 20*u.arcsec)
 	r = j.get_results()
-	
+
 	return r
 
 
@@ -450,7 +451,7 @@ def get_stellar_data_and_mag(name='',
 
 	star_input = {'ra':RA,'dec':Dec,'pmra':PMRA,'pmdec':PMDec,'PMEpoch':PMEpoch, 'px':Plx, 'Equinox':Equinox, 'Vmag': Vmag, 'Jmag':Jmag, 'rv':None, 'sp_type':None,
 	'Umag':None,'Bmag':None, 'Vmag':None,'Rmag':None,'Imag':None,'Jmag':None, 'Hmag':None,'Kmag':None}
-	
+
 	star_simbad = {}
 	star_tic = {}
 
@@ -506,10 +507,10 @@ def wav_airtovac(la):
 	Input should be in Angstoms.
 	Using the equation 3 in IAU standard accorind to Morton 1991
 	http://adsabs.harvard.edu/abs/1991ApJS...77..119M
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-	
+
 	"""
 	sig = 1e4/la
 	# n - 1 =
@@ -522,24 +523,24 @@ def wav_vactoair(lv):
 	Input should be in Angstoms.
 	Using the equation 3 in IAU standard accorind to Morton 1991
 	http://adsabs.harvard.edu/abs/1991ApJS...77..119M
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-	
+
 	"""
 	sig = 1e4/lv
 	# n - 1 =
 	n_m_1 = 6.4328e-5 + 2.94981e-2/(146-sig**2) + 2.5540e-4/(41-sig**2)
 	la = lv/(1 + n_m_1)
 	return la
-	
+
 
 def Mdwarf_teff_from_AbsMag_Rabus2019(MG):
 	"""
 	Calculates Teff based on a cubic polynomial from M_G (absolute Gaia mag) from Rabus 2019
 	"""
 	Teff = ufloat(10171.7, 1449.6) - ufloat(1493.4, 410.8)*MG + ufloat(114.1, 38.3)*(MG**2) - ufloat(3.2, 1.2)*(MG**3)
-	
+
 	return Teff
 
 
@@ -555,10 +556,10 @@ def Mdwarf_teff_from_r_Mann2015(st_rad,plot=False):
 
 	NOTES:
 		only valid for 0.125 R_sun and 0.68 R_sun. If not, will return nan
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	"""
 	m = (st_rad>0.125)&(st_rad<0.68)
 	if np.sum(~m)>0:
@@ -588,10 +589,10 @@ def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 		Figure 9 in Mann et al. 2015
 		Equation 4
 		Constants in Table 1
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	"""
 	# if np.any(st_teff>4200):
 		# print("Warning {} elements with TEFF>4200K".format(np.sum(st_teff>4200)))
@@ -611,7 +612,7 @@ def Mdwarf_r_from_teff_Mann2015(st_teff,plot=False):
 		ax.plot(st_teff,R,'k.')
 		ax.plot(_T,_R,color='red')
 	return R
-	
+
 
 def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 	"""
@@ -628,12 +629,12 @@ def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 		Figure 9 in Mann et al. 2015
 		Equation 5
 		Constants in Table 1
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	"""
-	
+
 	if FeH is None:
 		return Mdwarf_r_from_teff_Mann2015(st_teff)
 	# if np.any(st_teff>4200):
@@ -641,7 +642,7 @@ def Mdwarf_r_from_teff_feh_Mann2015(st_teff, FeH=None):
 	# if np.any(st_teff>2700):
 		# print("Warning {} elements with TEFF<2700K".format(np.sum(st_teff<2700)))
 	a = 16.7700
-	b = -54.3210 
+	b = -54.3210
 	c = 57.6627
 	d = -19.6994
 	f = 0.4565
@@ -657,31 +658,31 @@ def Mdwarf_r_from_ks_Mann2015(AbsK):
 	Calculate the stellar radius from absolute K mag from eqn 4 in Mann 2015
 	Typical scatter in radius is ~20%
 	"""
-	
+
 	a = 1.9515
 	b = -0.3520
 	c = 0.01680
-	
+
 	radius = a + b*AbsK + c*(AbsK**2)
-	
+
 	return radius
-	
+
 def Mdwarf_r_from_ks_feh_Mann2015(AbsK, FeH=None):
 	"""
 	Calculate the stellar radius from absolute K mag from eqn 5 in Mann 2015
 	Typical scatter in radius is ~20%
 	"""
-	
+
 	if FeH is None:
 		return Mdwarf_r_from_ks_Mann2015(AbsK)
-	
+
 	a = 1.9305
 	b = -0.3466
 	c = 0.01647
 	f = 0.04458
-	
-	radius = (a + b*AbsK + c*(AbsK**2))* (1 + f*FeH) 
-	
+
+	radius = (a + b*AbsK + c*(AbsK**2))* (1 + f*FeH)
+
 	return radius
 
 def Mdwarf_m_from_ks_Mann2015(AbsK):
@@ -689,13 +690,13 @@ def Mdwarf_m_from_ks_Mann2015(AbsK):
 	Calculate the stellar mass from absolute K mag from eqn 10 in Mann 2015
 	Typical scatter in mass is ~??%
 	"""
-	
+
 	a = 0.5858
 	b = 0.3872
-	c = - 0.1217 
+	c = - 0.1217
 	d = 0.0106
 	e = -2.7262 * 1e-4
-	
+
 	mass = a + b*AbsK + c*(AbsK**2) + d*(AbsK**3)+ e*(AbsK**4)
 	return mass
 
@@ -707,7 +708,7 @@ def Mdwarf_m_from_ks_Mann2019(AbsK):
 	a = [-0.642, -0.208, 8.43e-4, 7.87e-3, 1.42e-4, -2.13e-4]
 	zp = 7.5
 	M = 0
-	
+
 	for i in range(len(a)): M+=a[i]*((AbsK - zp)**i)
 
 	return 10**M
@@ -720,16 +721,16 @@ def Mdwarf_m_from_r_Schweitzer2019(radius):
 
 	a = ufloat(-0.0240, 0.0076)
 	b = ufloat(1.055, 0.017)
-	
+
 	return a + b*radius
-	
+
 
 def Mdwarf_m_from_AbsMag_Delfosse2000(AbsK=None, AbsH=None, AbsJ=None, AbsV=None):
 	"""
 	Calculate the stellar mass from absolute  V, J, H, K magnitues from Delfosse 2000
-	
+
 	Check if the magnitudes fall within the range of the paper, i.e. roughly 0.1 to 0.5 M_sun
-	
+
 	Output:
 		AbsK, AbsH, AbsJ, AbsV
 	"""
@@ -739,7 +740,7 @@ def Mdwarf_m_from_AbsMag_Delfosse2000(AbsK=None, AbsH=None, AbsJ=None, AbsV=None
 		for i in range(len(CoeffK)): StMass_K += (AbsK**i) * CoeffK[i]
 		StMass_K = 10**(StMass_K*1e-3)
 	else: StMass_K = None
-	
+
 	if AbsH is not None:
 		CoeffH = [1.4, 4.76, 10.641, -5.0320, 0.28396]
 		StMass_H = 0
@@ -753,14 +754,14 @@ def Mdwarf_m_from_AbsMag_Delfosse2000(AbsK=None, AbsH=None, AbsJ=None, AbsV=None
 		for i in range(len(CoeffJ)): StMass_J += (AbsJ**i) * CoeffJ[i]
 		StMass_J = 10**(StMass_J*1e-3)
 	else: StMass_J = None
-	
+
 	if AbsV is not None:
 		CoeffV = [0.3, 1.87, 7.6140, -1.6980, 0.060958]
 		StMass_V = 0
 		for i in range(len(CoeffV)): StMass_V += (AbsV**i) * CoeffV[i]
 		StMass_V = 10**(StMass_J*1e-3)
 	else: StMass_V = None
-	
+
 	return StMass_K, StMass_H, StMass_J, StMass_V
 
 def Mdwarf_m_from_AbsMag_Benedict2016(AbsK=None, AbsV=None):
@@ -775,10 +776,10 @@ def Mdwarf_m_from_AbsMag_Benedict2016(AbsK=None, AbsV=None):
 		C3 = ufloat(0.0038, 0.0002)
 		C4 = ufloat(-0.0032, 0.0001)
 		x0 = 7.5
-	
-		StMass_K = C0 + C1*(AbsK - x0) + C2*((AbsK - x0)**2)  + C3*((AbsK - x0)**3)  + C4*((AbsK - x0)**4) 
+
+		StMass_K = C0 + C1*(AbsK - x0) + C2*((AbsK - x0)**2)  + C3*((AbsK - x0)**3)  + C4*((AbsK - x0)**4)
 	else: StMass_K = None
-	
+
 	if AbsV is not None:
 		C0 = ufloat(0.19226, 0.000424)
 		C1 = ufloat(-0.050737, 0.000582)
@@ -786,137 +787,137 @@ def Mdwarf_m_from_AbsMag_Benedict2016(AbsK=None, AbsV=None):
 		C3 = ufloat(-0.00075399, 4.57e-5)
 		C4 = ufloat(1.9858e-5, 1.09e-5)
 		x0 = 13
-	
-		StMass_V = C0 + C1*(AbsV - x0) + C2*((AbsV - x0)**2)  + C3*((AbsV - x0)**3)  + C4*((AbsV - x0)**4) 
+
+		StMass_V = C0 + C1*(AbsV - x0) + C2*((AbsV - x0)**2)  + C3*((AbsV - x0)**3)  + C4*((AbsV - x0)**4)
 	else: StMass_V = None
-	
+
 	return StMass_K, StMass_V
-	
+
 def Mdwarf_AbsMag_from_m_Benedict2016(StMass):
 	"""
 	Calculate absolute K and V mag from stellar mass using Eqn 10 in Benedict 2016.
-	
+
 	Typical errors:
 		Vmag : 0.19 mag
 		Kmag: 0.09 mag
-	
+
 	"""
-	
-	y0 = -11.41; 
-	A1 = 1.64; Tau1 = 0.05; 
+
+	y0 = -11.41;
+	A1 = 1.64; Tau1 = 0.05;
 	A2 = 19.81; Tau2 = 3.1
 	x0 = 0.076
 	AbsK = y0 + A1*np.exp( - (StMass - x0)/Tau1) + A2*np.exp( - (StMass - x0)/Tau2)
-	
-	y0 = -2.59; 
+
+	y0 = -2.59;
 	A1 = 4.77; Tau1 = 0.03;
 	A2 = 16.98; Tau2 = 1.38;
 	x0 = 0.076
 	AbsV = y0 + A1*np.exp( - (StMass - x0)/Tau1) + A2*np.exp( - (StMass - x0)/Tau2)
-	
+
 	return AbsK, AbsV
-	
+
 
 def PhotometricMetallicity_Bonfils2005(V, K, MK):
 	"""
 	Use Eqn 1 from Bonfils et al. 2005 to calculate the metallicity for M dwarfs
-	
+
 	INPUTS:
 		V: V mag (apparent)
 		K: K mag (apparent)
 		MK: Absolute K mag
 	OUTPUTS:
 		Fe/H: Metallicity
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 24th Jan 2022
 	"""
-	
+
 	FeH = 0.196 - 1.527*MK + 0.091*(MK**2) + 1.886*(V-K) - 0.142*((V-K)**2)
-	
+
 	return FeH
 
 
 def PhotometricMetallicity_JohnsonApps2009(V, K, MK):
 	"""
 	Use Eqn 1 from Johnson and Apps et al. 2009 to calculate the metallicity for M dwarfs
-	
+
 	INPUTS:
 		V: V mag (apparent)
 		K: K mag (apparent)
 		MK: Absolute K mag
 	OUTPUTS:
 		Fe/H: Metallicity
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 24th Jan 2022
-		
+
 	"""
-	
+
 	x = (V-K)
 	# Coefficients from Section 2 of the paper
 	Coeff = [-9.58933, 17.3952,-8.88365, 2.22598, -0.258854, 0.0113399]
 	IsoMetallicityContour = 0
 	for i in range(len(Coeff)): IsoMetallicityContour+= ((x**i)*Coeff[i])
-	
+
 	FeH = 0.56 * (IsoMetallicityContour-MK) - 0.05
-	
+
 	return FeH
 
 
 def PhotometricMetallicity_SchlaufmanLaughlin2010(V, K, MK):
 	"""
 	Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
-	
+
 	INPUTS:
 		V: V mag (apparent)
 		K: K mag (apparent)
 		MK: Absolute K mag
 	OUTPUTS:
 		Fe/H: Metallicity
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 24th Jan 2022
 	"""
-	
+
 	x = MK
 	# Coefficients from Section 2 of the paper
 	Coeff = [51.1413, -39.3756, 12.2862, -1.83916, 0.134266, -0.00382023]
 	V_K_Iso = 0
 	for i in range(len(Coeff)): V_K_Iso+= ((x**i)*Coeff[i])
-	
+
 	Delta = V - K - V_K_Iso
-	
+
 	FeH = 0.79 * Delta - 0.17
-	
+
 	return FeH
 
 
 def PhotometricMetallicity_Neves2012(V, K, MK):
 	"""
 	Use Eqn 1 from Neves et al. 2010 to calculate the metallicity for M dwarfs
-	
+
 	INPUTS:
 		V: V mag (apparent)
 		K: K mag (apparent)
 		MK: Absolute K mag
 	OUTPUTS:
 		Fe/H: Metallicity
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 24th Jan 2022
 	"""
-	
+
 	x = MK
 	# Coefficients from Section 2 of the paper
 	Coeff = [51.1413, -39.3756, 12.2862, -1.83916, 0.134266, -0.00382023]
 	V_K_Iso = 0
 	for i in range(len(Coeff)): V_K_Iso+= ((x**i)*Coeff[i])
-	
+
 	Delta = V - K - V_K_Iso
-	
+
 	FeH = 0.57 * Delta - 0.17
-	
+
 	return FeH
 
 
@@ -972,7 +973,7 @@ def calculate_stellar_luminosity(st_rad, st_teff, st_raderr1=0.0, st_tefferr1=0.
 		Uncertainties in st_rad, Teff
 	OUTPUT:
 		L_star: In units of L_sol
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
 	"""
@@ -993,10 +994,10 @@ def calculate_insolation_flux(st_lum, pl_orbsmax, st_lumerr1=0.0, pl_orbsmaxerr1
 		semi_major_axis: Semi major axis in AU
 	OUTPUT:
 		S: Insolation flux in units of S_earth
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	"""
 
 	st_lum = ufloat(st_lum, st_lumerr1)
@@ -1015,10 +1016,10 @@ def calculate_semi_major_axis(st_mass, pl_orbper, st_masserr1=0.0, pl_orbpererr1
 		pl_orbpererr1 = Error
 	OUTPUTS:
 		pl_orbsmax = In AU
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	"""
 
 	pl_orbper = (pl_orbper*u.yr).to(u.s).value
@@ -1062,10 +1063,10 @@ def calculate_orbvelocity(st_mass, pl_orbper=None, pl_orbsmax=None):
 		pl_orbper = Orbital period in years
 		pl_obrsmax = Semi Major axis in AU
 			Need either period or semi major axis
-			
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		  
+
 	"""
 	st_mass = (st_mass*ac.M_sun).to(u.M_sun)
 
@@ -1090,15 +1091,15 @@ def calculate_orbperiod(st_mass, pl_orbsmax, secondary_mass=0):
 	INPUTS:
 		st_mass = Stellar Mass in Solar Masses
 		pl_orbsmax = In AU
-		
+
 		Optional:  secondary_mass: Mass of the secondary in Solar Masses
-		
+
 	OUTPUTS:
 		pl_orbper = Orbital Period in years
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	"""
 	pl_orbsmax = (pl_orbsmax*ac.au).to(u.m)
 	# ~ pl_orbper = (pl_orbper*u.yr).to(u.s)
@@ -1118,10 +1119,10 @@ def calculate_eqtemperature(st_rad, st_teff, pl_orbsmax, st_raderr1=0.0, st_teff
 		pl_orbsmax = Semi major axis in AU
 	OUTPUTS:
 		pl_eqt =
-		
+
 
 	from pyastrotools.astro_tools
-	Shubham Kanodia 27th April 2021	  
+	Shubham Kanodia 27th April 2021
 	"""
 	AU2SolarRadii = u.AU.to(u.R_sun)
 
@@ -1133,6 +1134,20 @@ def calculate_eqtemperature(st_rad, st_teff, pl_orbsmax, st_raderr1=0.0, st_teff
 	return st_teff * ((st_rad/pl_orbsmax/2)**(1/2))
 
 
+def calculate_eqtemperature_frominsolation(pl_insol):
+	"""
+	Calculate the equilibrium temperature from insolation flux
+	INPUTS:
+		pl_insol = Insolation flux in units of S_earth
+	OUTPUTS:
+		pl_eqt = EqT of the planet in Kelvin
+
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 27th April 2021
+	"""
+
+	return 278.57*pl_insol**(0.25)
 
 
 def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_eqterr1=0.0, pl_masseerr1=0.0, st_raderr1=0.0):
@@ -1186,11 +1201,11 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 	Shubham Kanodia 23rd August 2022
 
 	"""
-	
+
 	from astropy.modeling import models
-	
+
 	Rsun2Rearth = u.R_sun.to(u.R_earth)
-	
+
 	pl_rade = ufloat(pl_rade, pl_radeerr1)
 	st_rad = ufloat(st_rad, st_raderr1)
 
@@ -1198,6 +1213,19 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 
 	return ESM
 
+
+"""
+from pyastrotools.astro_tools import calculate_EclipseDepth
+import numpy as np
+
+wl = np.arange(0.6, 5.5, 0.1)
+pl_rade = 11.6
+pl_eqt = 737
+st_rad = 0.394
+st_teff = 3430
+
+depth = calculate_EclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff)
+"""
 
 def calculate_EclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff):
 	"""
@@ -1215,11 +1243,11 @@ def calculate_EclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff):
 	Shubham Kanodia 26th January 2023
 
 	"""
-	
+
 	from astropy.modeling import models
-	
+
 	Rsun2Rearth = u.R_sun.to(u.R_earth)
-	
+
 	Depth = (1e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*u.K)(wl*u.um) / models.BlackBody(temperature=st_teff*u.K)(wl*u.um)).value
 
 	return Depth
@@ -1228,22 +1256,22 @@ def calculate_EclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff):
 def CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=0.0, pl_radeerr1=0.0):
 	"""
 	Calculate the surface gravity for given planetary mass and radius
-	
+
 	INPUTS:
-		
+
 		pl_masse : Planetary mass (Earth masses)
 		pl_rade : Planetary radius (Earth radii)
 		pl_masseerr1: Planetary mass 1 sigma error (Earth masses): Default = 0
 		pl_radeerr1: Planetary radius 1 sigma error (Earth radius): Default = 0
-	
+
 	OUTPUTS:
 		g: Surface gravity (cm/s2)
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 23rd Nov 2021
-	
+
 	"""
-	
+
 	pl_rade = (pl_rade*u.R_earth).to(u.cm).value
 	pl_radeerr1 = (pl_radeerr1*u.R_earth).to(u.cm).value
 	pl_masse = (pl_masse*u.M_earth).to(u.g).value
@@ -1251,15 +1279,15 @@ def CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=0.0, pl_radeerr1=0.0
 
 	pl_rade = ufloat(pl_rade, pl_radeerr1)
 	pl_masse = ufloat(pl_masse, pl_masseerr1)
-	
+
 	g = ac.G.cgs.value * pl_masse / (pl_rade**2)
-	
+
 	return g
 
 def CalculateScaleHeight(pl_masse, pl_rade, pl_eqt, pl_masseerr1=0.0, pl_radeerr1=0.0, pl_eqterr1=0.0):
 	"""
 	Calcualte the planetary scale height
-	
+
 	INPUTS:
 		pl_masse : Planetary mass (Earth masses)
 		pl_rade : Planetary radius (Earth radii)
@@ -1267,25 +1295,25 @@ def CalculateScaleHeight(pl_masse, pl_rade, pl_eqt, pl_masseerr1=0.0, pl_radeerr
 		pl_masseerr1: Planetary mass 1 sigma error (Earth masses): Default = 0
 		pl_radeerr1: Planetary radius 1 sigma error (Earth radius): Default = 0
 		pl_eqterr1: Planetary equilibrium temperature 1 sigma error (K): Default = 0
-	
+
 	OUTPUTS:
 		H: Scale Height (km)
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 23rd Nov 2021
 	"""
-	
+
 	g = CalculateSurfaceGravity(pl_masse, pl_rade, pl_masseerr1=pl_masseerr1, pl_radeerr1=pl_radeerr1)
-	
+
 	surfacegravity = g/100 # Convert cm/s2 to m/s2
 	eqt = ufloat(pl_eqt, pl_eqterr1) # Kelvin
-	
-	
+
+
 	# Using the mean molecular weight to be 2.2 x m_p for hydrogen molecule
 	H = ac.k_B.value * eqt / (ac.m_p.value  * 2.2 * surfacegravity)
-	
+
 	return H/1000
-	
+
 
 def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, Plot=False):
 	"""
@@ -1294,12 +1322,12 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 	QueryEqT: Equilibrium temperature for planet (K): [Has to lie between 78 K, 1960 K]
 	QueryAge: In Gyr. Fortney 2007 options are 0.3 Gyr, 1 Gyr, 4.5 Gyr. Will find the one closest
 	"""
-		
+
 	"""
 	Table 2 = Giant planet radii at 300 Myr
 	Table 3 = Giant planet radii at 1 Gyr
 	Table 4 = Giant planet radii at 4.5 Gyr
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 23rd Nov 2021
 	"""
@@ -1360,7 +1388,7 @@ def CalculateCoreMass_Fortney2007(QueryMass, QueryRadiusE, QueryEqT, QueryAge, P
 		plt.ylabel("Planet Radius $(R_J$)")
 		plt.axhline(QueryRadius, color='k', linestyle='dashed', label="Input planetary radius")
 		plt.legend()
-		
+
 	return CoreMass
 
 def CalculateCoreMass_Thorngren2016(QueryMass):
@@ -1383,9 +1411,9 @@ def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_o
 	"""
 	Calculate the tidal circularization and inspiral time scales based on Persson et al. 2019 which is based on Jackson et al. 2008
 	Equations have been lifted from Caleb's paper (Canas et al. 2021) for TOI-2119
-	
+
 	INPUTS:
-		st_mass: Stellar mass in sol mass 
+		st_mass: Stellar mass in sol mass
 		st_rad: Stellar radii in sol radii
 		pl_masse: Planetary mass in earth mass
 		pl_rade: Planetary radii in earth radii
@@ -1393,22 +1421,22 @@ def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_o
 		pl_orbsmax: Semi Major axis in AU
 		Qplanet: Tidal Quality factor for planet
 		Qstar: Tidal Quality factor for planet
-		
+
 	OUTPUTS:
 		tau_e : Circularization timescale (yrs)
 		tau_a :  Inspiral timescale (yrs)
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 23rd Nov 2021
 	"""
-	
+
 	st_mass = st_mass * u.M_sun
 	st_rad = st_rad * u.R_sun
 	pl_rade = pl_rade * u.R_earth
 	pl_masse = pl_masse * u.M_earth
 	pl_orbsmax = pl_orbsmax * u.au
-	
-		
+
+
 	invtau_a_star = ( pl_orbsmax**(-13/2) * (9/2) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr) # Deform star by planet
 	invtau_a_planet = ( pl_orbsmax**(-13/2) * (63/2) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5) * (pl_orbeccen**2) / pl_masse  / Qplanet)).to(1/u.yr) # Deform planet by star
 	tau_a = 1/(invtau_a_star + invtau_a_planet)
@@ -1417,47 +1445,47 @@ def CalculateCircTimescales_Jackson2008(st_mass, st_rad, pl_masse, pl_rade, pl_o
 	invtau_e_star = ( pl_orbsmax**(-13/2) * (171/16) * np.sqrt(ac.G / st_mass) * ((st_rad**5) * pl_masse  / Qstar)).to(1/u.yr) # Deform star by planet
 	invtau_e_planet = ( pl_orbsmax**(-13/2) * (63/4) * np.sqrt(ac.G * (st_mass**3)) * ((pl_rade**5)  / pl_masse  / Qplanet)).to(1/u.yr) # Deform planet by star
 	tau_e = 1/(invtau_e_star + invtau_e_planet)
-	
+
 	return tau_e, tau_a
-	
+
 
 def CalculateCircTimescales_GoldreichSoter1966(pl_masse, pl_rade, st_mass, pl_orbsmax, Q):
 	"""
 	Calculate the tidal circularization and inspiral time scales based on Goldreich & Soter 1966
 	Equation lifted from Waalkes et al. (2021) paper
-	
+
 	INPUTS:
 		pl_masse: Planetary mass in earth mass
 		pl_rade: Planetary radii in earth radii
-		st_mass: Stellar mass in sol mass 
+		st_mass: Stellar mass in sol mass
 		pl_orbsmax: Semi Major axis in AU
-		Q: Friction coefficient (Q_jup = 1e5, Q_saturn = 0.6e5, Q_uranus = 0.72e4, 
+		Q: Friction coefficient (Q_jup = 1e5, Q_saturn = 0.6e5, Q_uranus = 0.72e4,
 			Q_earth=13, Q_venus = 17, Q_mars = 26, Q_mercury = 190)
 
-		
+
 	OUTPUTS:
 		tau_circ : Circularization timescale (yrs)
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 23rd Nov 2021
 	"""
-	
+
 	pl_orbper = calculate_orbperiod(st_mass, pl_orbsmax)
-	
+
 	st_mass = st_mass * u.M_sun
 	pl_rade = pl_rade * u.R_earth
 	pl_masse = pl_masse * u.M_earth
 	pl_orbper = pl_orbper * u.yr
 	pl_orbsmax = pl_orbsmax * u.au
-	
+
 	tau_circ = ((2*Q/(63*np.pi)) * pl_orbper * (pl_masse/st_mass) * ((pl_orbsmax/pl_rade)**5)).to(u.yr)
-	
+
 	return tau_circ
 
 def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
 	"""
 	Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
-	
+
 	INPUTS:
 		Prot: Rotation period in days
 		ProtError: Rotation period error in days
@@ -1465,13 +1493,13 @@ def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
 	OUTPUTS:
 		Age: Nominal Age (Gyr)
 		Age_Sigma: (Gyr)
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 15th January 2022
 	"""
-	
+
 	Prot = ufloat(Prot, ProtError)
-	
+
 	if EarlyType:
 		y0 = ufloat(0.365, 0.431)
 		a = ufloat(0.019, 0.018)
@@ -1480,16 +1508,16 @@ def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
 		y0 = ufloat(0.012, 0.221)
 		a = ufloat(0.061, 0.002)
 		b = ufloat(1.0, 0.0)
-		
+
 	Age = y0 + a*(Prot**b)
-	
+
 	return Age.n, Age.s
-		
+
 
 def CalculateMdwarfAge_fromProt_Engle2023(Prot, ProtError=0.0, MdwarfSpectralSubType=1.0):
 	"""
 	Use the scaling relations from Engle and Guinan 2023 to convert stellar rotation period to age
-	
+
 	INPUTS:
 		Prot: Rotation period in days
 		ProtError: Rotation period error in days
@@ -1497,11 +1525,11 @@ def CalculateMdwarfAge_fromProt_Engle2023(Prot, ProtError=0.0, MdwarfSpectralSub
 	OUTPUTS:
 		Age: Nominal Age (Gyr)
 		Age_Sigma: (Gyr)
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 4th July 2023
 	"""
-	
+
 	Prot = ufloat(Prot, ProtError)
 
 	if MdwarfSpectralSubType <= 2:
@@ -1539,40 +1567,40 @@ def CalculateMdwarfAge_fromProt_Engle2023(Prot, ProtError=0.0, MdwarfSpectralSub
 			c = ufloat(-0.0212, 0.0022)
 			d = ufloat(25.4500,2.4552)
 			Age = a*Prot + b + c*(Prot - d)
-	
+
 	else: print("M dwarf Spectral Type < 6.5"); return None, None
-	
+
 	return (10**Age).n, (10**Age).s
 
 
 def CalculateHillRadius(pl_orbsmax, pl_masse, st_mass, pl_orbeccen=0.0):
 	"""
 	Calculate the Hill Radius
-	
+
 	INPUTS:
 		pl_orbsmax:  Semi-major axis of the smaller object (AU)
 		pl_masse: Mass of the smaller object (Earth mass)
 		st_mass: Mass of the larger object (Solar mass)
 		pl_orbeccen: Eccentricity of the smaller object. Default is 0.0
-		
+
 	OUTPUTS:
 		r_hill: Hill Radius (km)
-	
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 26th May 2022
 	"""
-	
+
 	st_mass = st_mass * u.M_sun
 	pl_masse = pl_masse * u.M_earth
 	pl_orbsmax = pl_orbsmax * u.au
-	
-	
-	r_hill = pl_orbsmax*(1-pl_orbeccen) * (((pl_masse/3/st_mass).to(u.m/u.m))**(1/3))
-	
-	return r_hill.to(u.km).value
-				
 
-Test = r"""	
+
+	r_hill = pl_orbsmax*(1-pl_orbeccen) * (((pl_masse/3/st_mass).to(u.m/u.m))**(1/3))
+
+	return r_hill.to(u.km).value
+
+
+Test = r"""
 pl_orbeccen = 0.1
 pl_rade = 6
 pl_masse = 30
@@ -1611,21 +1639,21 @@ epsilon = 0.0
 def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_insol, st_mass, redQ,
 	pl_orbeccenerr1=0.0, epsilon=0):
 	"""
-	Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)	
-	
+	Calculate the tidal luminosity using equations from Leconte et al. 2010 (also given in Millholand 2020)
+
 	INPUTS:
 		pl_orbeccen, pl_orbeccenerr1 = Eccentricity of planet, with the default error = 0
 		pl_rade = Radius of the planet [Earth radius]
 		pl_orbsmax = Semi-major axis [AU]
 		pl_orbper = Orbital Period [d]
 		pl_insol = Planetary insolation [S_earth]
-		
+
 	OUTPUTS:
 		L_tide = Power imparted by the tidal forces [Watts]
 		L_irradiance = Power imparted on the planet due to bolometric luminosity
 		L_tide/L_irradiance = Ratio of the two
 		T_tides = Temperature due to tides, assuming L = 4*pi*rp^2 T_tide^4
-		
+
 	from pyastrotools.astro_tools
 	Shubham Kanodia 26th May 2022
 	"""
@@ -1635,37 +1663,37 @@ def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_ins
 	pl_orbper = pl_orbper * u.d
 	pl_orbsmax = pl_orbsmax * u.au
 	st_mass = st_mass * u.M_sun
-	
-	N_a_e = (1 + ((31/2)*(pl_orbeccen**2)) + ((255/8)*(pl_orbeccen**4)) + 
+
+	N_a_e = (1 + ((31/2)*(pl_orbeccen**2)) + ((255/8)*(pl_orbeccen**4)) +
 		((185/16)*(pl_orbeccen**6)) + ((25/64)*(pl_orbeccen**8))) / ((1-(pl_orbeccen**2))**(15/2))
 
-	N_e = (1 + ((15/2)*(pl_orbeccen**2)) + ((45/8)*(pl_orbeccen**4)) + 
+	N_e = (1 + ((15/2)*(pl_orbeccen**2)) + ((45/8)*(pl_orbeccen**4)) +
 		((5/16)*(pl_orbeccen**6)) ) / ((1-(pl_orbeccen**2))**(6))
-	
+
 	Omega_e = (1 + ((3)*(pl_orbeccen**2)) + ((3/8)*(pl_orbeccen**4))) / ((1-(pl_orbeccen**2))**(9/2))
-	
+
 	n = 2*np.pi/pl_orbper
-	
+
 	K = (3*n/2) * (3/(2*redQ)) * (ac.G*st_mass*st_mass/pl_rade) * ((pl_rade/pl_orbsmax)**6)
 	K = K.to(u.W)
-	
+
 	L_tide = 2*K*(N_a_e - (N_e*N_e*2*(np.cos(np.deg2rad(epsilon))**2))/(Omega_e * (1 + (np.cos(np.deg2rad(epsilon))**2))))
-	
+
 	# 1360 W/m2 is the solar flux constant
 	L_irr = pl_insol * (1360*u.W/(u.m**2)) * (2*np.pi*pl_rade**2)
 	L_irr = L_irr.to(u.W)
-	
+
 	T_tides = ((L_tide / (ac.sigma_sb * (pl_rade**2) * (4*np.pi)) )**(1/4)).to(u.K)
-	
+
 	# print("N_a_e = {:.5f}".format(N_a_e.n))
 	# print("N_e = {:.5f}".format(N_e.n))
 	# print("Omega_e  = {:.5f}".format(Omega_e.n))
-	
+
 	return L_tide, L_irr, L_tide/L_irr, T_tides
-	
 
 
-def GetUVW_Membership(RA, Dec, ConeRadius=60, 
+
+def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	AbsRV=None, e_AbsRV=None, verbose=True):
 	'''
 	Get UVW membership using galpy
@@ -1676,7 +1704,7 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	ConeRadius = Cone radius to search (in arcseonds)
 	AbsRV, e_AbsRV = Bulk absolute velocity and error [km/s]. Default is None, but can specify values to overwrite the Gaia values
 	verbose  = If True, will print the values
-	
+
 	'''
 
 	from astropy.coordinates import SkyCoord
@@ -1688,10 +1716,10 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	j = Gaia.cone_search_async(coord, radius=ConeRadius*u.arcsec)
 	r = j.get_results()
 
-	Columns = ['dist', 'source_id', 'solution_id', 
+	Columns = ['dist', 'source_id', 'solution_id',
 		'ra', 'ra_error', 'dec', 'dec_error',
 		'parallax', 'parallax_error', 'pmra', 'pmra_error', 'pmdec', 'pmdec_error',
-		'teff_val', 'lum_val', 'phot_g_mean_mag', 'phot_bp_mean_mag', 'phot_rp_mean_mag', 
+		'teff_val', 'lum_val', 'phot_g_mean_mag', 'phot_bp_mean_mag', 'phot_rp_mean_mag',
 		'astrometric_excess_noise', 'astrometric_excess_noise_sig',
 		'radial_velocity', 'radial_velocity_error',]
 
@@ -1715,7 +1743,7 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 
 	# Required for covariance between PMRA and PMDec. Bit arbitrary
 	result['PM_ERR_MAJA'] = [0.02]
-	result['PM_ERR_MINA'] = [0.02] 
+	result['PM_ERR_MINA'] = [0.02]
 
 	pms_lb = bovy_coords.pmrapmdec_to_pmllpmbb(result['PMRA'][0],result['PMDEC'][0],result['RA_deg'][0],result['DEC_deg'][0],degree=True)
 	pml,pmb = pms_lb[0], pms_lb[1]
@@ -1754,8 +1782,8 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	ErrorInLSR = [0.72, 0.47, 0.37]
 
 	if verbose:
-		print("Galactic Velocities in LSR {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}".format(uvw[0]+LSRVelocity[0],np.sqrt(error_uvw[0]**2 + ErrorInLSR[0]), 
-																																											uvw[1]+LSRVelocity[1],np.sqrt(error_uvw[1]**2 + ErrorInLSR[1]), 
+		print("Galactic Velocities in LSR {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}, {:.2f}\pm{:.2f}".format(uvw[0]+LSRVelocity[0],np.sqrt(error_uvw[0]**2 + ErrorInLSR[0]),
+																																											uvw[1]+LSRVelocity[1],np.sqrt(error_uvw[1]**2 + ErrorInLSR[1]),
 																																											uvw[2]+LSRVelocity[2],np.sqrt(error_uvw[2]**2 + ErrorInLSR[2])))
 
 	U, V, W = uvw
@@ -1766,7 +1794,7 @@ def GetUVW_Membership(RA, Dec, ConeRadius=60,
 	U += 11.10 # +- 0.72
 	V += 12.24 # +- 0.47
 	W += 7.25 # +- 0.37
-	
+
 	df = pd.read_csv(os.path.join(CodeDir, 'Data',"Bensby2014_A1.csv"))
 	df = df.set_index('Population').T
 
@@ -1835,3 +1863,36 @@ def radius_100_percent_iron_planet(logMass):
 	Radius_iron = np.log10((0.0975*(logMass**2)) + (0.4938*logMass) + 0.7932)
 	return Radius_iron
 
+
+def ConvertMetallicityNumberFractionAndMassFraction(Z_to_H=None, Z=None):
+	"""
+	Atmospheric metallicity is typically reported as [Z/H] times solar, which is an abundance and a number fraction.
+	This is NOT a metallicity mass fraction Z.
+
+	The code below calculates Z (mass fraction) from Z_to_H (number fraction) or vice versa depending on the input.
+
+	Using Thorngren & Fortney 2019, Eqn 3, and the following constants:
+	1) Y/X ratio of 0.3383 (He/H mass fraction),
+	2) mean molecular mass of Hydrogen (mu_H) as 2
+	3) number fraction of metals to hydrogen for the Sun Z_to_H_sol = 1.04e-3 (from Asplund et al. 2009, but DOUBLE CHECK)
+
+	and the assumption for metals (mu_Z) = 18 (assuming mu_Z = mu_H2O)
+
+	Inputs (ONLY ONE of the below):
+		Z_to_H = Number fraction of metals relative to Hydrogen, times the Sun.  For example, Z_to_H = 80 is a metal number fraction of 80x the Sun
+		Z = Mass fraction of metals. For reference Z_sol = 0.014 (Asplund 2009)
+
+	Shubham Kanodia 26th June 2024
+	"""
+
+	YX = 0.3383
+	mu_H2 = 2
+	mu_H2O = 18
+	Z_to_H_sol = 1.04e-3 # DOUBLE CHECK
+
+	if Z_to_H is not None:
+		Z = 1 / (1 + ((1 + YX)/(mu_H2O/mu_H2) / (Z_to_H * Z_to_H_sol)))
+	else:
+		Z_to_H = (((1 + YX)/(mu_H2O/mu_H2))  / (1/Z - 1))  / Z_to_H_sol
+
+	return Z_to_H, Z
