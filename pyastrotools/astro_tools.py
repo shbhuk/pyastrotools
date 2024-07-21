@@ -39,6 +39,8 @@ Stellar parameter scaling relations -
 15. PhotometricMetallicity_SchlaufmanLaughlin2010 - Use Eqn 1 from Schlaufman and Laughlin 2010 to calculate the metallicity for M dwarfs
 16. PhotometricMetallicity_Neves2012 - Use Eqn 3 from Neves et al. 2012 to calculate the metallicity for M dwarfs
 17. fgk_tess_from_mr_feh - Use M,R to calculate log(g), and then invert the Torres 2010 relation to find  Teff.
+18. CalcPmodeNuMax - Calculate the maximum frequency for p-mode oscillations
+19. CalcPmodePhotAmp - Calculate the photometric amplitude for P-mode oscillations in a given bandpass
 
 
 Query Functions -
@@ -1896,3 +1898,38 @@ def ConvertMetallicityNumberFractionAndMassFraction(Z_to_H=None, Z=None):
 		Z_to_H = (((1 + YX)/(mu_H2O/mu_H2))  / (1/Z - 1))  / Z_to_H_sol
 
 	return Z_to_H, Z
+
+def CalcPmodeNuMax(Mstar, Rstar, Teff):
+	"""
+	Based on Eqn 10 from Kjeldsen & Bedding 1995, calculate the maximum frequency for p-mode oscillations
+	Input:
+	Mstar: Stellar mass in solar units
+	Rstar: Stellar radius in solar units
+	Teff: Effective Temperature in K
+
+	Output:
+		nu_max: Scaling the solar nu_max of 3090 uHz
+	"""
+	return ((Mstar/(Rstar**2))*np.sqrt(5777/Teff))*3090
+
+
+def CalcPmodePhotAmp(Mstar, Lstar, Teff, Aphot_Sun=2.125):
+	"""
+	Calculate the photometric amplitude for P-mode oscillations in a given bandpass
+	Based on Eqns 3,4,5 from Gupta et al. 2022
+
+	Input:
+	Mstar: Stellar mass in solar units
+	Lstar: Stellar luminosity in solar units
+	Teff: Effective Temperature in K
+	Aphot_Sun: Photometric amplitude for the Sun in given bandpass
+
+	Output:
+	Aphot: Photometric amplitude for the star scaled from the Sun
+
+	"""
+	Tred = 8907*(Lstar**(-0.093))
+	Beta = 1 - np.exp(-(Tred - Teff)/1550)
+	s = 1
+	Aphot = Aphot_Sun*Beta*(Lstar**s)*(Mstar**(-s))*((Teff/5777)**(-2))
+	return Aphot
