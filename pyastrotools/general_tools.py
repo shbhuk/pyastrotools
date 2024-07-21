@@ -290,3 +290,32 @@ def GetCDF(Data, NBins=100, Range=None):
 
 	return bins, cdf
 
+
+def CalcAllanDeviation(t, data, BinSize= [45, 90, 120, 180, 240, 300, 360, 480, 600, 900, 3000]):
+	"""
+	Calculate Allan Deviation
+
+	Input:
+	t : Time axis in seconds
+	data: Data axis
+	BinSize: List of BinSizes [seconds]
+
+	"""
+
+	data /= np.nanmedian(data)
+
+	Sigmas = np.zeros(np.shape(BinSize))
+
+	Unbinnedwhitenoise = np.std(data)
+
+
+	for i, b in enumerate(BinSize):
+		Start = np.where(t-b/2 > 0)[0][0]
+		End = np.where((t[-1] - t)>b/2)[0][-1]
+		NewArray = []
+		for j in range(Start,End+1):
+			ConsiderIndices  = np.where((t > t[j] - b/2) & (t < t[j] + b/2))
+			NewArray.append(np.average(data[ConsiderIndices]))
+		Sigmas[i] = np.std(NewArray)
+
+	return Sigmas, Unbinnedwhitenoise
