@@ -74,6 +74,7 @@ Exoplanet specific functions -
 20. mass_100_percent_iron_planet - This is from 100% iron curve of Fortney, Marley and Barnes 2007; solving for logM (base 10) via quadratic formula
 21. radius_100_percent_iron_planet - This is from 100% iron curve from Fortney, Marley and Barnes 2007; solving for logR (base 10) via quadratic formula.
 22. ConvertMetallicityNumberFractionAndMassFraction - Convert between metallicity number and mass fractions
+23. CalculateTidalSpinDownTimescale - Calculate the tidal time spin-down timescale based on Eqn 1 from Guillot 1996
 
 '''
 
@@ -430,7 +431,7 @@ def _QueryGaia(coord, Radius=20):
 	"""
 	from astroquery.gaia import Gaia
 
-	j = Gaia.cone_search_async(coord, 20*u.arcsec)
+	j = Gaia.cone_search_async(coord, Radius*u.arcsec)
 	r = j.get_results()
 
 	return r
@@ -707,7 +708,7 @@ def Mdwarf_m_from_ks_Mann2019(AbsK):
 	Calculate the stellar mass from absolute K mag from eqn 4 in Mann 2019
 	Typical scatter in mass is 2-3%
 	"""
-	a = [-0.642, -0.208, 8.43e-4, 7.87e-3, 1.42e-4, -2.13e-4]
+	a = [-0.642, -0.208, -8.43e-4, 7.87e-3, 1.42e-4, -2.13e-4]
 	zp = 7.5
 	M = 0
 
@@ -1484,6 +1485,33 @@ def CalculateCircTimescales_GoldreichSoter1966(pl_masse, pl_rade, st_mass, pl_or
 
 	return tau_circ
 
+def CalculateTidalSpinDownTimescale(pl_massj, pl_radj, st_mass, pl_orbsmax, Qp=1e5, wp=1.7e-4):
+	"""
+	Calculate the tidal time spin-down timescale based on Eqn 1 from Guillot 1996
+
+	INPUTS:
+		pl_massj: Mass of the planet in Jupiter masses
+		pl_radj: Radius of the planet in Jupiter radii
+		st_mass: Mass of the star in solar masses
+		pl_orbsmax: Semi-major axis (AU)
+		Qp: Planet's tidal dissipation factor Default is 1e5
+		wp: Planet's primordial rotation rate. Default is 1.7e-4/s (Jupiter)
+	OUTPUTS:
+		Timescale in yr
+	"""
+
+	pl_massj = pl_massj * u.M_jup
+	pl_radj = pl_radj * u.R_jup
+	st_mass = st_mass * u.M_sun
+	pl_orbsmax = pl_orbsmax * u.au
+	wp = wp/u.s
+
+	Timescale = Qp*((pl_radj**3)/(ac.G*pl_massj))*wp*((pl_massj/st_mass)**2)*((pl_orbsmax/pl_radj)**6)
+
+	return Timescale.to(u.yr)
+
+
+
 def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
 	"""
 	Use the scaling relations from Engle and Guinan 2018 to convert stellar rotation period to age
@@ -1933,7 +1961,7 @@ def CalcPmodeDeltaNuMax(Mstar, Rstar):
 
 def CalcPmodePhotAmp(Mstar, Lstar, Teff, Aphot_Sun=2.125):
 	"""
-	Calculate the photometric amplitude for P-mode oscillations in a given bandpass
+	Calculate the photometric amplitude for radial l=0 P-mode oscillations in a given bandpass
 	Based on Eqns 3,4,5 from Gupta et al. 2022
 
 	Input:
