@@ -1,3 +1,5 @@
+# Script to generate airmass plots for a given orbiting system and marking phases. Can also generate .tw file for Gemini PIT
+
 import os
 import sys
 import numpy as np
@@ -24,53 +26,107 @@ Dec = 13.273706
 pl_tranmid = 2459553.71670012
 pl_orbper = 20.35829214
 
-pl_name = "TOI-5349 b"
-RA = 52.71257
-Dec = 20.879628
-pl_tranmid = 2459475.36817946
-pl_orbper = 3.31794591
+
+pl_name = "TIC-140834213 b"
+RA = 76.009409
+Dec = 74.502532
+pl_tranmid = 2458994.0838406
+pl_orbper = 8.979226879
+
+pl_name = "TOI-7393  b"
+RA = 227.359837
+Dec = 55.981056
+pl_tranmid = 2460369.40819655
+pl_orbper =3.33708467
+
+
+pl_name = "TOI-5873 b"
+RA  = 324.986222
+Dec = 1.29336
+pl_tranmid = 2459797.48248823
+pl_orbper = 0.41314288
+
+# """
+
+# pl_name = 'TIC-240768149 b'
+# RA = 340.216226
+# Dec = -17.139553
+# pl_tranmid = 2458354.9636226
+# pl_orbper = 0.6240740
+# """
+
+# pl_name = "TOI-5325 b"
+# RA = 32.912647
+# Dec = 4.192318
+# pl_tranmid = 2459498.292378
+# pl_orbper = 15.057596
+
+# pl_name = "TOI-6848"
+# RA = 24.418283
+# Dec =-54.80939
+# pl_tranmid = 2458361.1614476
+# pl_orbper = 7.5957680
+
+pl_name = "TIC-311276853 b"
+RA = 247.739002
+Dec = 26.106951
+pl_tranmid = 2458987.47200494
+pl_orbper = 5.16954679
+
 
 # Run 1
-QueryStartDate = start_query = Time(datetime.datetime(2023, 9, 4), format='datetime')
-QueryEndDate = start_query = Time(datetime.datetime(2023, 9, 13), format='datetime')
+QueryStartDate =  Time(datetime.datetime(2026, 5, 1), format='datetime')
+QueryEndDate = Time(datetime.datetime(2026, 9, 1), format='datetime')
 
 
-# Run 2
-# QueryStartDate = start_query = Time(datetime.datetime(2023, 9, 17), format='datetime')
-# QueryEndDate = start_query = Time(datetime.datetime(2023, 10, 2), format='datetime')
-
-# Run 3
-# QueryStartDate = start_query = Time(datetime.datetime(2023, 10, 8), format='datetime')
-# QueryEndDate = start_query = Time(datetime.datetime(2023, 10, 29), format='datetime')
-
-# Run 4
-# QueryStartDate = start_query = Time(datetime.datetime(2023, 11, 19), format='datetime')
-# QueryEndDate = start_query = Time(datetime.datetime(2024, 1, 2), format='datetime')
+# QueryStartDate = Time(datetime.datetime(2023, 11, 9), format='datetime')
+# QueryEndDate = Time(datetime.datetime(2023, 11, 30), format='datetime')
 
 
 QueryPhases = [[0.05, 0.15], [0.20, 0.30], [0.30, 0.40], [0.40, 0.60], [0.60, 0.70], [0.70, 0.80], [0.85, 0.95]]
+# QueryPhases = [[0.0,  0.999]]
+# QueryPhases = [[0.001, 0.999]]
+QueryPhases = [[0.64, 0.86]]
 
-ObsName = "Gemini North"
-MinMoonSeparation = 25
-MinAltitude = 30
-MaxAltitude = 90
+# Transit is 0
+# RV min is 0.25
+# RV max is 0.75
+
+# ObsName = "keck"
+# MinAltitude = 15
+# MaxAltitude = 89
+
+ObsName = "Keck"
+MinMoonSeparation = 10
+MinAltitude = 45
+MaxAltitude = 85
+
+ObsName = "McDonald"
+MinAltitude = 45
+MaxAltitude = 60
+
 PlotDirectory = r"C:\Users\skanodia\Documents\PSU\Proposals\GeminiNorth\2023B\2023B_ObservingFiles"
+# PlotDirectory = r"C:\Users\skanodia\Documents\PSU\M_dwarves\TSLs\UT23-3-010"
+PlotDirectory = r"C:\Users\skanodia\Downloads"
 PlotAirmass = True
 PlotPhase = True
+
 
 
 ###############################
 Location = find_location(obsname=ObsName)
 Target = SkyCoord(ra=RA, dec=Dec,unit=(u.deg, u.deg))
+plt.close("all")
 
 for QueryPhase in QueryPhases:
 	SurvivingWindows = ''
 	FileName = os.path.join(PlotDirectory, '{}_{}_Phase{}_{}_{}.pdf'.format(ObsName.replace(' ', ''), pl_name.replace(' ', ''), QueryPhase[0], QueryPhase[1], QueryStartDate.isot[:-13].replace('-', '')))
 	if PlotPhase: pp = PdfPages(FileName)
 
+	# DateRange = np.linspace(QueryStartDate, QueryEndDate, round(QueryEndDate.jd - QueryStartDate.jd)+1)
+	DateRange = Time(np.linspace(QueryStartDate.jd, QueryEndDate.jd, round(QueryEndDate.jd - QueryStartDate.jd)+1), format='jd')
 	for i in range(round(QueryEndDate.jd - QueryStartDate.jd)+1):
-		DateRange = np.linspace(QueryStartDate, QueryEndDate, round(QueryEndDate.jd - QueryStartDate.jd)+1)
-		ObsTime = DateRange[i] # Cycle through each date
+		ObsTime = DateRange[i] # Cycle thrpough each date
 
 		UTCOffset, Timezone = find_utc_offset(Location, ObsTime)
 		Observatory = Observer(location=Location, name="", timezone=Timezone)
@@ -99,16 +155,17 @@ for QueryPhase in QueryPhases:
 		SunMask = SunAltAz.alt.value < -18 # 18 degree Nautical Twilight and thereafter
 		MoonMask = MoonSeparation > MinMoonSeparation
 		AltitudeMask = (TargetAltAz.alt.value > MinAltitude) & (TargetAltAz.alt.value < MaxAltitude)
-		DurationMask = (Interval.value*24*60) > 40
-
-		MasterMask = PhaseMask & MoonMask & SunMask & AltitudeMask & DurationMask
+		MasterMask = PhaseMask & MoonMask & SunMask & AltitudeMask
 
 		SurvivingTimes = TimeObs[MasterMask]
 
 		if len(SurvivingTimes) == 0: continue # Requirements not met. Skip
 		Interval = SurvivingTimes[-1] - SurvivingTimes[0]
+		if (Interval.value*24*60) < 30: continue # Too short a visit.
 
-		SurvivingWindows += SurvivingTimes[0].iso[:-6]+'00' + '\t' + "{:02d}:{:02d}\n".format(int(round(Interval.value*24//1)), int(round((Interval.value*24%1)*60)))
+
+		# SurvivingWindows += SurvivingTimes[0].iso[:-6]+'00' + '\t' + "{:02d}:{:02d}\n".format(int(round(Interval.value*24//1)), int(round((Interval.value*24%1)*60)))
+		SurvivingWindows += SurvivingTimes[0].isot[:-6]+'00' + ' \t ' + "{:02d}:{:02d} \t {:.02f} \n".format(int(round(Interval.value*24//1)), int(round((Interval.value*24%1)*60)), PhaseObs[np.argmax(TargetAltAz.alt.value)])
 
 		if PlotAirmass:
 
@@ -119,7 +176,7 @@ for QueryPhase in QueryPhases:
 			ax2 = ax1.twiny()
 			ax1.grid(False); #ax2.grid(False)
 
-			s = ax1.scatter(DeltaMidnight.value, TargetAltAz.alt,c=TargetAltAz.az, s=15, marker='.',
+			s = ax1.scatter(DeltaMidnight.value, TargetAltAz.alt.value,c=TargetAltAz.az.value, s=15, marker='.',
 						cmap='viridis', label=pl_name)
 
 			# Plot the Sun, Moon and Airmass lines
@@ -133,10 +190,16 @@ for QueryPhase in QueryPhases:
 				_ = [plt.text(DeltaMidnight.value[EastMask & MasterMask][j] - 1.0, TargetAltAz.alt.value[EastMask & MasterMask][j], "{:.03f}".format(PhaseObs[EastMask & MasterMask][j]), c='white') for j in range(0, len(PhaseObs[EastMask & MasterMask]), 8)]
 				_ = [plt.text(DeltaMidnight.value[WestMask & MasterMask][j] + 0.8, TargetAltAz.alt.value[WestMask & MasterMask][j], "{:.03f}".format(PhaseObs[WestMask & MasterMask][j]), c='white') for j in range(0, len(PhaseObs[WestMask & MasterMask]), 8)]
 
-			ax1.hlines(48, *xboundary, 'r', 'dashed')
-			ax1.text(-4, 49, 'Airmass 1.5', c='w', fontsize=15)
-			ax1.hlines(30, *xboundary, 'r', 'dashed')
-			ax1.text(-4, 31, 'Airmass 2.0', c='w', fontsize=15)
+			if ObsName == 'McDonald':
+				ax1.hlines(50, *xboundary, 'r', 'dashed')
+				ax1.text(-4, 51, 'Altitude  50', c='w', fontsize=12)
+				ax1.hlines(60, *xboundary, 'r', 'dashed')
+				ax1.text(-4, 61, 'Altitude  60', c='w', fontsize=12)
+			else:
+				ax1.hlines(48, *xboundary, 'r', 'dashed')
+				ax1.text(-4, 49, 'Airmass 1.5', c='w', fontsize=15)
+				ax1.hlines(30, *xboundary, 'r', 'dashed')
+				ax1.text(-4, 31, 'Airmass 2.0', c='w', fontsize=15)
 			ax1.legend(loc='upper left')
 
 			ax1.set_title('{}; {}; ObsName = {}\nLocal Midnight at UTC {}. JD {}. \nMoon Illum = {}%. Min. Moon Sep = {} deg\nOrbital Period = {:.2f} d, Phase at Max Alt = {:.03f}'.format(pl_name, Target.to_string('hmsdms'), ObsName, Midnight.datetime,np.round(Midnight.jd,2),
@@ -160,7 +223,7 @@ for QueryPhase in QueryPhases:
 			ax2.set_xticks(LocalTicks)
 			ax2.set_xticklabels(["{}".format(s).zfill(2)+'00' for s in UTCTicks%24], rotation=90, size=15)
 			ax2.set_xlabel('[UTC]', size=12)
-			plt.colorbar(s).set_label('Azimuth [deg]', fontsize=20)
+			# plt.colorbar(s).set_label('Azimuth [deg]', fontsize=20)
 			ax1.set_xlim(*xboundary)
 			ax1.set_ylim(0, 90)
 			ax1.set_ylabel('Altitude [deg]', fontsize=20)
@@ -170,6 +233,7 @@ for QueryPhase in QueryPhases:
 			pp.savefig(fig)
 		# break
 	pp.close()
+	plt.close("all")
 	print(QueryPhase)
 	print(SurvivingWindows)
 

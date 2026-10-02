@@ -23,31 +23,31 @@ import pytz
 
 
 class NEA(object):
-	def __init__(self, DownloadPS=True):
+	def __init__(self, DownloadComposite=True):
 		"""
-		DownloadPS: If True, will download the entire Planetary Systems CSV, this includes multiple rows for each system. Set default_flag=1 to pick default (smaller csv).
-		If False, will download the Planetary Systems Composite Parameters, which consists of composite parameters from multiple sources for each planet (larger csv).
-		
+		DownloadComposite: If True, will download the Planetary Systems Composite Parameters, which consists of composite parameters from multiple sources for each planet (smaller csv).
+		If False, will download the entire Planetary Systems CSV, this includes multiple rows for each system. Set default_flag=1 to pick default (larger csv).
+
 		"""
 		# Download / Load the NASA Exoplanet Archive table and initialize
 		location = os.path.dirname(__file__)
 		save_file = os.path.join(location,'nasa_archive_exoplanets.csv')
 		# url = 'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&select=*'
-		
-		if DownloadPS:
-			url = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+ps&format=csv"
-		else:
+
+		if DownloadComposite:
 			url = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+pscomppars&format=csv"
+		else:
+			url = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+ps&format=csv"
 
 		_ = download_file_check_staleness(url=url, time_tolerance=14, save_file=save_file, file_name = 'NASA Exoplanet Archive')
 
 
 		## Read into Astropy Table ##
 		self.archive = pd.read_csv(save_file, low_memory=False)
-		
-		if DownloadPS:
-			self.archive = self.archive[self.archive['default_flag'] == 1]
-		
+
+		# if DownloadComposite:
+			# self.archive = self.archive[self.archive['default_flag'] == 1]
+
 		#Exoplanet_archive.mask = np.nan
 		print('Reading the NASA Exoplanet Archive file into Table Object')
 		self.colnames = self.archive.columns
