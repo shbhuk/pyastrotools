@@ -75,6 +75,12 @@ Exoplanet specific functions -
 21. radius_100_percent_iron_planet - This is from 100% iron curve from Fortney, Marley and Barnes 2007; solving for logR (base 10) via quadratic formula.
 22. ConvertMetallicityNumberFractionAndMassFraction - Convert between metallicity number and mass fractions
 23. CalculateTidalSpinDownTimescale - Calculate the tidal time spin-down timescale based on Eqn 1 from Guillot 1996
+24. CalculateRocheLimit - Calculate Roche limit for a planet based on Eggleton 1983
+25. CalculateHZ_Kopparapu2013 - Calculate HZ separation based on Kopparapu 2013
+
+
+Gaia specific functions
+1. GaiaDR3_G_GRVS: G - G_RVS from G - G_RP. Sartoretti+2023 Eqs. 9 (<=1.2) and 10 (>1.2)
 
 '''
 
@@ -1137,6 +1143,49 @@ def calculate_eqtemperature(st_rad, st_teff, pl_orbsmax, st_raderr1=0.0, st_teff
 	return st_teff * ((st_rad/pl_orbsmax/2)**(1/2))
 
 
+
+def calculate_semimajoraxis_from_eqtemperature(st_rad, st_teff, pl_eqt, st_raderr1=0.0, st_tefferr1=0.0, pl_eqterr1=0.0):
+	"""
+	Calculate the semi-major axis of the planet from its  equilibrium temperature
+	INPUTS:
+		st_rad = Stellar Radius in Sol radi
+		st_teff = Effective Temperature in Kelvin
+		pl_eqt = Equilibrium Temperature (Kelvin)
+	OUTPUTS:
+		pl_orbsmax  =  Semi major axis in AU
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 17th July 2025
+	"""
+
+	AU2SolarRadii = u.AU.to(u.R_sun)
+
+	st_rad = ufloat(st_rad, st_raderr1)
+	st_teff = ufloat(st_teff, st_tefferr1)
+	pl_eqt = ufloat(pl_eqt, pl_eqterr1)
+
+	pl_orbsmax =  ((st_teff/pl_eqt)**2) / AU2SolarRadii/2
+
+	return pl_orbsmax
+
+
+def calculate_semimajoraxis_from_eqtemperature_stlum(st_lum, pl_eqt):
+	"""
+	Calculate the semi-major axis of the planet from its  equilibrium temperature
+	INPUTS:
+		st_lum = Stellar Luminosity (x Solar Luminosity)
+		pl_eqt = Equilibrium Temperature (Kelvin)
+	OUTPUTS:
+		pl_orbsmax  =  Semi major axis in AU
+
+	from pyastrotools.astro_tools
+	Shubham Kanodia 6th May 2026
+	"""
+
+	pl_orbsmax =  np.sqrt(st_lum*u.L_sun / (16*np.pi*ac.sigma_sb * ((pl_eqt*u.K)**4)))
+
+	return pl_orbsmax.to(u.au)
+
 def calculate_eqtemperature_frominsolation(pl_insol):
 	"""
 	Calculate the equilibrium temperature from insolation flux
@@ -1188,7 +1237,7 @@ def calculate_TSM(pl_rade, pl_eqt, pl_masse, st_rad, st_j, pl_radeerr1=0.0, pl_e
 
 	return TSM
 
-def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_raderr1=0.0):
+def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, consider_wl=7.5, pl_radeerr1=0.0, st_raderr1=0.0):
 	"""
 	Calculate Emission Spectroscopy Metric (ESM) from Kempton 2018 (for JWST)
 	INPUTS:
@@ -1197,6 +1246,7 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 		st_rad = Stellar Radius in Sol radi
 		st_teff = Effective Temperature in Kelvin
 		st_k = K magnitude
+		consider_wl = Wavelength (in um) at which the blackbody is calculated
 	OUTPUTS:
 		ESM
 
@@ -1212,7 +1262,7 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 	pl_rade = ufloat(pl_rade, pl_radeerr1)
 	st_rad = ufloat(st_rad, st_raderr1)
 
-	ESM = (4.29e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*1.10*u.K)(7.5*u.um) / models.BlackBody(temperature=st_teff*u.K)(7.5*u.um)).value *  (10**(-st_k/5))
+	ESM = (4.29e6)*((pl_rade/st_rad/Rsun2Rearth)**2) * (models.BlackBody(temperature=pl_eqt*1.10*u.K)(consider_wl*u.um) / models.BlackBody(temperature=st_teff*u.K)(consider_wl*u.um)).value *  (10**(-st_k/5))
 
 	return ESM
 
@@ -1221,11 +1271,11 @@ def calculate_ESM(pl_rade, pl_eqt, st_rad, st_teff, st_k, pl_radeerr1=0.0, st_ra
 from pyastrotools.astro_tools import calculate_EclipseDepth
 import numpy as np
 
-wl = np.arange(0.6, 5.5, 0.1)
-pl_rade = 11.6
-pl_eqt = 737
-st_rad = 0.394
-st_teff = 3430
+wl = np.arange(0.6, 15.5, 0.1)
+pl_rade = 13.2
+pl_eqt = 593
+st_rad = 0.351
+st_teff = 3363
 
 depth = calculate_EclipseDepth(wl, pl_rade, pl_eqt, st_rad, st_teff)
 """
@@ -1510,6 +1560,70 @@ def CalculateTidalSpinDownTimescale(pl_massj, pl_radj, st_mass, pl_orbsmax, Qp=1
 
 	return Timescale.to(u.yr)
 
+def CalculateRocheLimit(Mp, Mstar, Rp):
+    """
+	Calculate Roche Limit based on Equation 2 from Eggleton 1983
+	https://ui.adsabs.harvard.edu/abs/1983ApJ...268..368E
+
+    Inputs
+    ----------
+    Mp :  Planet mass (use astropy quantities)
+    Mstar : Stellar Mass (use astropy quantities)
+    Rp :  Planet radius (use astropy quantities)
+...:
+    Returns
+    -------
+    a_roche : float or array
+        Orbital separation where Rp = RL
+    """
+    q = Mp / Mstar
+    q13 = q**(1/3)
+    q23 = q13**2
+
+    f_q = 0.49 * q23 / (0.6 * q23 + np.log(1 + q13))
+
+    return Rp / f_q
+
+def CalculateHZ_Kopparapu2013(T_eff, L_star):
+    """
+    Compute conservative HZ bounds (Runaway GH inner, Maximum GH outer)
+    using Kopparapu et al. (2013), Table 3.
+
+    Parameters
+    ----------
+    T_eff  : float or array — stellar effective temperature [K]
+    L_star : float or array — stellar luminosity [L_sun]
+
+    Returns
+    -------
+    d_inner, d_outer : AU
+
+    Written by Claude AI Sonnet 4.6 on prompting by SK on 2026 October 01
+    """
+    T_star = T_eff - 5780.0
+
+    # Runaway Greenhouse (inner, conservative)
+    Seff_sun_i = 1.0512
+    a_i =  1.3242e-4
+    b_i =  1.5418e-8
+    c_i = -7.9895e-12
+    d_i = -1.8328e-15
+
+    # Maximum Greenhouse (outer, conservative)
+    Seff_sun_o = 0.3438
+    a_o =  5.9942e-5
+    b_o =  1.6558e-9
+    c_o = -3.0045e-12
+    d_o = -5.2983e-16
+
+    Seff_i = Seff_sun_i + a_i*T_star + b_i*T_star**2 + c_i*T_star**3 + d_i*T_star**4
+    Seff_o = Seff_sun_o + a_o*T_star + b_o*T_star**2 + c_o*T_star**3 + d_o*T_star**4
+
+    d_inner = np.sqrt(L_star / Seff_i)
+    d_outer = np.sqrt(L_star / Seff_o)
+
+    return d_inner, d_outer
+
 
 
 def CalculateMdwarfAge_fromProt_Engle2018(Prot, ProtError=0.0, EarlyType=True):
@@ -1664,6 +1778,18 @@ pl_orbsmax = 0.0199
 redQ = 1e5
 epsilon = 0.0
 """
+"""
+7149
+pl_orbeccen = 0.078
+pl_orbeccenerr1 = 0.048
+pl_rade = 13.2
+pl_orbsmax = 0.02603
+pl_orbper = 2.65206166
+pl_insol = 20.6
+st_mass = 0.344
+redQ = 1e5
+"""
+
 
 
 def CalculateTidalLuminosity(pl_orbeccen, pl_rade, pl_orbsmax, pl_orbper, pl_insol, st_mass, redQ,
@@ -1979,3 +2105,200 @@ def CalcPmodePhotAmp(Mstar, Lstar, Teff, Aphot_Sun=2.125):
 	s = 1
 	Aphot = Aphot_Sun*Beta*(Lstar**s)*(Mstar**(-s))*((Teff/5777)**(-2))
 	return Aphot
+
+
+def GaiaDR3_G_GRVS(c): 
+	"""
+	Input:
+		c = G - G_RP
+	Output:
+		G - G_RVS 
+	Based on Gaia DR3; Sartoretti+2023 Eqs. 9 (<=1.2) and 10 (>1.2).
+	NaN outside -0.15 <= G-G_RP <= 1.7.
+	"""
+	c = np.asarray(c, float)
+	blue = np.polyval([-0.0867, -0.0330, -0.2852, -0.0397], c)
+	red  = np.polyval([2.6089, -9.0532, 10.0187, -4.0618], c)
+	out = c - np.where(c <= 1.2, blue, red)
+
+	return np.where((c >= -0.15) & (c <= 1.7), out, np.nan)
+
+
+
+def Gaia_RVS_Performance(GRVS, Teff, Logg, Release="dr4", NTransits=None,
+                         Background="pygaia"):
+    """Gaia RVS radial-velocity uncertainty and expected signal-to-noise.
+
+    Model: ESA Gaia science performance pages (spectroscopic section,
+    updated 2022 from DR3), fitting the DR3 data of Katz et al. 2023,
+    A&A 674, A5 (their Fig. 9; subsample boxes in their Figs. E.1/F.1).
+    https://www.cosmos.esa.int/web/gaia/science-performance
+
+    The coefficients and the (Teff, logg) box geometry below -- including
+    the per-edge open/closed conventions and the split of g4 into two logg
+    boxes -- are taken from PyGaia (Anthony G.A. Brown, BSD-3-Clause),
+    src/pygaia/errors/spectroscopic.py and
+    src/pygaia/errors/data/rv_uncertainty_model_coeffs.json, the official
+    implementation of the ESA model. The box selection here is a direct
+    port of PyGaia's `_in_interval` logic and the loop that applies it,
+    so sigma_rv agrees with
+    `pygaia.errors.spectroscopic.radial_velocity_uncertainty` exactly
+    (verified on every box edge for dr3/dr4/dr5).
+    https://github.com/agabrown/PyGaia
+
+    This exists because PyGaia computes the expected S/N internally and
+    discards it, returning sigma_rv alone, and because its API fixes
+    rv_nb_transits at 32 (DR4) or 64 (DR5).
+
+	Written by Claude AI Opus 5 on prompting by SK on 2026 September 30
+
+    Parameters
+    ----------
+    GRVS, Teff, Logg : float or array_like
+        G_RVS (mag), effective temperature (K), surface gravity (dex).
+        Broadcast against each other.
+    Release : {"dr3", "dr4", "dr5"}
+        "dr3" uses the published-error relation, an exponential in
+        magnitude that does NOT involve S/N. "dr4"/"dr5" use the
+        S/N -> sigma mapping.
+    NTransits : int, optional
+        rv_nb_transits. Defaults to 18 (DR3 median), 32 (DR4), 64 (DR5).
+        Pass 1 for DR4 epoch radial velocities.
+    Background : {"pygaia", "esa"}
+        Background scaling in the S/N. PyGaia scales the background term
+        by the across-scan read count (10 for G_RVS <= 7, else 1); the
+        ESA page's prose instead fixes N_AC_PIXELS = 10 there and varies
+        only the read-noise term. Identical for G_RVS <= 7, then
+        diverging to ~1.9x in S/N by G_RVS = 16. Default reproduces
+        PyGaia; affects sigma_rv for dr4/dr5 only.
+
+    Returns
+    -------
+    sigma_rv : float or ndarray
+        Radial-velocity uncertainty (km/s). NaN outside the model's
+        validity: Teff/logg off the subsample grid, GRVS > 14 or
+        sigma_rv > 20 for dr3, GRVS > 16 or (GRVS > 12 and Teff > 7000)
+        for dr4/dr5.
+    snr : float or ndarray
+        rv_expected_sig_to_noise. Always computed from the photon budget,
+        so returned even where sigma_rv is NaN. For dr3 it is reported
+        for information only -- that release's sigma_rv is not derived
+        from it. 
+		SNR returned is per Gaia sample, i.e., 1 AL pixel x 10 AC pixels. 
+		To convert to per reoslution element (~ 3 pixels), multiply by 1.74 ()
+
+    Examples
+    --------
+    >>> Gaia_RVS_Performance(14.0, 4600, 1.0, "dr3")[0]   # docs case
+    5.63...
+    >>> Gaia_RVS_Performance(11.0, 3400, 4.8, "dr4")      # M-dwarf host
+    (0.41..., 68.2...)
+    """
+    # --- instrument constants (ESA performance page; identical in PyGaia)
+    ZP = 21.317            # G_RVS zero point, mag
+    EXPTIME = 4.4167032    # s per CCD
+    NSPEC = 3              # spectra per transit
+    PIXW = 0.02453         # along-scan pixel width, nm
+    BANDW = 24.0           # 870.0 - 846.0, nm
+    BKG = 4.7              # median background, e-/pixel
+    RON = 3.2              # read-out noise, e-
+    NAC_BRIGHT, NAC_FAINT = 10, 1   # AC samples for GRVS <= 7, else
+    NB_TRANSITS = {"dr3": 18, "dr4": 32, "dr5": 64}
+
+    # --- subsample boxes and coefficients (PyGaia's JSON, verbatim)
+    # (teff_lo, teff_hi, closed), (logg_lo, logg_hi, closed),
+    # dr3 (a, b, sfloor, grvs0), dr45 (f, sfloor, sbreak, snrbreak, g, k)
+    MODEL = {
+        "d1":  ((3000, 4000, "left"), (4.0, 5.0, "both"),
+                (0.95, 5.0, 0.32, 13.5), (-0.99, 0.31, 1.10, 27.0, -5.00, 20.0)),
+        "d2":  ((4000, 5000, "left"), (4.0, 5.0, "both"),
+                (0.90, 5.0, 0.13, 14.0), (-0.98, 0.11, 0.96, 27.0, -3.33, 20.0)),
+        "d3":  ((5000, 6000, "left"), (3.5, 5.0, "both"),
+                (0.90, 7.0, 0.13, 14.0), (-0.95, 0.11, 1.10, 27.0, -3.30, 20.0)),
+        "d4":  ((6000, 7000, "left"), (3.5, 5.0, "both"),
+                (0.85, 9.0, 0.13, 14.0), (-0.95, 0.12, 1.32, 27.0, -3.18, 20.0)),
+        "d5":  ((7000, 8000, "left"), (3.5, 5.0, "both"),
+                (0.80, 5.0, 0.45, 12.0), (-0.93, 0.20, 4.25, 27.0, -2.85, 20.0)),
+        "d6":  ((8000, 10000, "left"), (3.5, 5.0, "both"),
+                (0.80, 11.0, 0.80, 12.0), (-1.02, 0.28, 6.10, 38.0, -2.90, 20.0)),
+        "d7":  ((10000, 14500, "both"), (3.5, 5.0, "both"),
+                (1.00, 3.0, 1.00, 10.0), (-1.59, 0.38, 8.60, 40.0, -3.30, 20.0)),
+        "g1":  ((3000, 4750, "both"), (-0.5, 1.0, "left"),
+                (1.00, 6.0, 0.16, 14.0), (-1.02, 0.15, 0.41, 38.0, -3.50, 20.0)),
+        "g2":  ((3500, 5250, "both"), (1.0, 2.0, "left"),
+                (1.00, 5.5, 0.13, 14.0), (-1.01, 0.13, 0.26, 60.0, -4.10, 20.0)),
+        "g3":  ((4000, 5500, "both"), (2.0, 3.0, "left"),
+                (1.00, 6.0, 0.12, 14.0), (-1.06, 0.12, 0.29, 60.0, -4.20, 20.0)),
+        "g4a": ((4500, 5500, "both"), (3.0, 3.5, "left"),
+                (1.00, 7.0, 0.12, 14.0), (-1.11, 0.12, 0.31, 60.0, -4.20, 20.0)),
+        "g4b": ((4500, 5000, "left"), (3.5, 4.0, "left"),
+                (1.00, 7.0, 0.12, 14.0), (-1.11, 0.12, 0.31, 60.0, -4.20, 20.0)),
+    }
+
+    def in_interval(a, left, right, closed="both"):
+        """Port of PyGaia's `_in_interval`."""
+        if left > right:
+            raise ValueError("left must be <= right")
+        if closed == "both":
+            return (a >= left) & (a <= right)
+        if closed == "left":
+            return (a >= left) & (a < right)
+        if closed == "right":
+            return (a > left) & (a <= right)
+        if closed == "neither":
+            return (a > left) & (a < right)
+        raise ValueError("closed must be both|neither|left|right")
+
+    # --- validate and shape inputs
+    rel = str(Release).lower()
+    if rel not in NB_TRANSITS:
+        raise ValueError('Release must be "dr3", "dr4" or "dr5"')
+    if Background not in ("pygaia", "esa"):
+        raise ValueError('Background must be "pygaia" or "esa"')
+
+    g, t, lg = (np.asarray(x, dtype=float) for x in (GRVS, Teff, Logg))
+    if not (g.shape == t.shape == lg.shape):
+        g, t, lg = np.broadcast_arrays(g, t, lg)
+    scalar = g.ndim == 0
+    g, t, lg = (np.atleast_1d(x).astype(float) for x in (g, t, lg))
+
+    n = NB_TRANSITS[rel] if NTransits is None else NTransits
+
+    # --- expected S/N: rv_expected_sig_to_noise
+    signal = (10.0 ** (0.4 * (ZP - g)) * EXPTIME * NSPEC * n
+              * (PIXW / BANDW))
+    reads = np.where(g <= 7, NAC_BRIGHT, NAC_FAINT)   # 2D windows below 7
+    n_bkg = reads if Background == "pygaia" else NAC_BRIGHT
+    snr = signal / np.sqrt(signal
+                           + BKG * NSPEC * n * n_bkg
+                           + RON * RON * NSPEC * n * reads)
+
+    # --- sigma_rv, per subsample box
+    sigma = np.full(g.shape, np.nan)
+    for (t_lo, t_hi, t_cl), (l_lo, l_hi, l_cl), c3, c45 in MODEL.values():
+        m = in_interval(t, t_lo, t_hi, t_cl) & in_interval(lg, l_lo, l_hi, l_cl)
+        if not np.any(m):
+            continue
+        if rel == "dr3":
+            # sigma = sfloor + b * exp(a * (GRVS - GRVS0))
+            a, b, sfloor, grvs0 = c3
+            sigma[m] = sfloor + b * np.exp(a * (g[m] - grvs0))
+        else:
+            # two branches in S/N, joined by a tanh at snrbreak
+            f, sfloor, sbreak, snrbreak, gg, k = c45
+            x = np.log10(snr[m]) - np.log10(snrbreak)
+            lo = sbreak * (snr[m] / snrbreak) ** f
+            hi = sfloor + (sbreak - sfloor) * np.exp(gg * x)
+            h = (1.0 + np.tanh(k * x)) / 2.0
+            sigma[m] = h * hi + (1.0 - h) * lo
+
+    # --- model validity masks (PyGaia's)
+    if rel == "dr3":
+        sigma[(g > 14) | (sigma > 20.0)] = np.nan
+    else:
+        sigma[g > 16] = np.nan
+        sigma[(g > 12) & (t > 7000)] = np.nan
+
+    if scalar:
+        return float(sigma[0]), float(snr[0])
+    return sigma, snr
