@@ -23,8 +23,9 @@ from .astro_tools import rv_magnitude_period, rv_magnitude_period_uncertainty, M
 try:
 	ETCDirectory = r"C:\Users\skanodia\Documents\GitHub\TESS_MADNESS\src\ETC"
 	ETCDirectory = os.path.join(os.path.dirname(os.path.dirname(Location)), 'TESS_MADNESS', 'src', 'ETC')
-	
-	sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20190329"))
+
+	# sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20190329"))
+	sys.path.append(os.path.join(ETCDirectory, "NEID_ETC_20231014"))
 	from neid_etcalc_public import NEID_RV_prec
 
 	sys.path.append(os.path.join(ETCDirectory, "HPF"))
@@ -57,8 +58,8 @@ def find_location(obsname=None, lat=0., longi=0., alt=0.):
 	lat : Latitude of observatory in [degrees]. North (+ve) and South (-ve).
 	longi : Longitude of observatory [degrees]. East (+ve) and West (-ve).
 	alt : Altitude of observatory [m].
-	
-			
+
+
 	from pyastrotools.observing_tools
 	Shubham Kanodia 27th April 2021
 	'''
@@ -77,9 +78,9 @@ def find_utc_offset(location, obstime, timezone=None):
 	'''
 	observatory - Astropy observatory object.
 	time - Astropy Time object
-	
+
 	from pyastrotools.observing_tools
-	Shubham Kanodia 27th April 2021	
+	Shubham Kanodia 27th April 2021
 	'''
 	if timezone is None:
 		timezone = location.info.meta['timezone']
@@ -99,7 +100,7 @@ def find_observatory(obstime, obsname, lat=0., longi=0., alt=0., timezone=None):
 	else:
 		location = find_location(obsname, lat, longi, alt)
 		utcoffset, timezone = find_utc_offset(location, obstime, timezone=timezone)
-		
+
 	observatory = Observer(location=location, name="", timezone=timezone)
 	return observatory, utcoffset
 
@@ -287,7 +288,7 @@ def TransitingSystem(pl_tranmid, pl_trandur, pl_orbper, start_query, pl_tranmide
 		If there are no transits found
 
 	https://arxiv.org/abs/2003.09046
-	
+
 	from pyastrotools.observing_tools
 	Shubham Kanodia 27th April 2021
 	"""
@@ -489,9 +490,9 @@ def find_next_midtransit_observable(pl_name, RA, Dec,
 
 	OUTPUT:
 	Ingress, Egress JD times
-	
+
 	from pyastrotools.observing_tools
-	Shubham Kanodia 27th April 2021	
+	Shubham Kanodia 27th April 2021
 	'''
 
 	observatory, utcoffset = find_observatory(obstime=start_query, obsname=obsname, lat=lat, longi=longi, alt=alt)
@@ -764,8 +765,8 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=0
 		HPF_sigma = HPF single visit precision.
 		K = Semi Amplitude of doppler signal
 		K_sigma = Uncertainty in K due to uncertainty in planetary mass
-		
-		
+
+
 	from pyastrotools.observing_tools
 	Shubham Kanodia 27th April 2021
 
@@ -800,7 +801,7 @@ def mdwarf_hpfneid_observability(pl_rade, Vmag=0, Jmag=0, pl_orbper=1, st_mass=0
 
 	return pl_masse, pl_masseerr1, st_teff, NEID_sigma, HPF_sigma, K, K_sigma
 
-	
+
 def fgk_hpfneid_observability(pl_rade, Vmag, Jmag, pl_orbper, st_mass,
 		  pl_orbpererr1 = 0.0, st_masserr1=0.0, pl_radeerr1=np.nan, st_rad=None, st_teff=None, exptime=1800, NEID_inst_precision = 0.3,
 		  return_mass_only=False, simulation=True, set_seed=0):
@@ -829,11 +830,11 @@ def fgk_hpfneid_observability(pl_rade, Vmag, Jmag, pl_orbper, st_mass,
 		HPF_sigma = HPF single visit precision.
 		K = Semi Amplitude of doppler signal
 		K_sigma = Uncertainty in K due to uncertainty in planetary mass
-		
-		
+
+
 	from pyastrotools.observing_tools
 	Shubham Kanodia 27th April 2021
-		
+
 	'''
 	if set_seed:
 		np.random.seed(set_seed)
@@ -918,18 +919,18 @@ def NoObservations(KoverSigma, SNR):
 	'''
 	Plavchan 2015, what are the number of observations required for a given SNR for K/sigma
 	Eqn 4.2.5
-	
-		
+
+
 	from pyastrotools.observing_tools
-	Shubham Kanodia 27th April 2021	
+	Shubham Kanodia 27th April 2021
 	'''
 	return 2*(SNR/KoverSigma)**2
 
 def InvNoObservations(NoObservations, SNR):
 	'''
 	Plavchan 2015, what is the K/sigma with a given SNR and in NoObservations
-	
-			
+
+
 	from pyastrotools.observing_tools
 	Shubham Kanodia 27th April 2021
 
@@ -937,10 +938,10 @@ def InvNoObservations(NoObservations, SNR):
 	return SNR/np.sqrt(NoObservations/2)
 
 
-def QueryObjectPosition(ObsTime, 
+def QueryObjectPosition(ObsTime,
 		TargetName=None,
-		RA=None, Dec=None, 
-		ObsName='',  lat=None, longi=None, alt=None, 
+		RA=None, Dec=None,
+		ObsName='',  lat=None, longi=None, alt=None,
 		QueryTIC=False, QueryGaia=False, QuerySimbad=True):
 	'''
 	Produce an altitude - azimuth - airmass plot for the target, Sun and the Moon.
@@ -962,7 +963,7 @@ def QueryObjectPosition(ObsTime,
 	from pyastrotools.observing_tools
 	Shubham Kanodia 22nd May 2021
 	'''
-	
+
 	location = find_location(obsname=ObsName, lat=lat, longi=longi, alt=alt)
 
 	observatory = Observer(location=location, name=ObsName)
@@ -988,11 +989,11 @@ def QueryObjectPosition(ObsTime,
 	moon_altaz = moon_obj.transform_to(frame_obsnight)
 	moon_separation = np.min(moon_obj.separation(target)).deg
 	moon_illumination = observatory.moon_illumination(ObsTime)
-	
+
 	if len(ObsTime) == 1:
 		print("Object {} is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(TargetName, targetaltaz_obsnight.alt, targetaltaz_obsnight.az, targetaltaz_obsnight.secz))
 		print("Sun is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(sun_altaz.alt, sun_altaz.az, sun_altaz.secz))
 		print("Moon is at Alt = {:.2f}, Az = {:.2f}, with airmass = {:.3f}".format(moon_altaz.alt, moon_altaz.az, moon_altaz.secz))
-		print("Moon is {:.2f} deg away from target with illumination = {:.2f} %".format(moon_separation, moon_illumination)) 
+		print("Moon is {:.2f} deg away from target with illumination = {:.2f} %".format(moon_separation, moon_illumination))
 
 	return targetaltaz_obsnight, sun_altaz, moon_altaz

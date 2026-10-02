@@ -5,6 +5,10 @@ from scipy.linalg import svd
 import datetime
 from scipy.integrate import simps
 from scipy.interpolate import UnivariateSpline
+from scipy.special import erfcinv
+from scipy.special import lambertw as W
+
+import argparse
 
 import matplotlib.pyplot as plt
 
@@ -216,10 +220,10 @@ def MakeResidualPlots(x, ydata, ymodel, Title='', Xlabel='', Ylabel='', Ymodella
 		Ymodellabels = [Ymodellabels]
 
 	for i in range(NumY):
-		axes[0].plot(x, ymodel[i], color=colours[i], label=Ymodellabels[i])
+		axes[0].plot(x, ymodel[i], color=colours[i], label=Ymodellabels[i], marker='.')
 		R = np.sum((ydata - ymodel[i])**2)
-		axes[1].plot(x, ydata - ymodel[i], color=colours[i], label="SSE = {:.4e}".format(R) )
-	axes[0].plot(x, ydata, 'k', label='Data')
+		axes[1].plot(x, ydata - ymodel[i], color=colours[i], label="SSE = {:.4e}".format(R), marker='.')
+	axes[0].plot(x, ydata, 'k.', label='Data')
 
 	plt.xlabel(Xlabel)
 	axes[0].set_ylabel(Ylabel)
@@ -319,3 +323,36 @@ def CalcAllanDeviation(t, data, BinSize= [45, 90, 120, 180, 240, 300, 360, 480, 
 		Sigmas[i] = np.std(NewArray)
 
 	return Sigmas, Unbinnedwhitenoise
+
+
+
+
+
+def Z_to_sigma(ln_Z1, ln_Z2):
+    '''
+    Convert the log-evidences of two models to a sigma confidence level.
+
+    '''
+
+    np.set_printoptions(precision=50)
+
+    B = np.exp(ln_Z1 - ln_Z2)                        # Bayes factor
+    p = np.real(np.exp(W((-1.0/(B*np.exp(1))),-1)))  # p-value
+
+    sigma = np.sqrt(2)*erfcinv(p)    # Equivalent sigma
+
+    print("ln Bayes factor = ", ln_Z1 - ln_Z2)
+    print("p-value = ", p)
+    print("n_sigma = ", sigma)
+
+    return B, sigma
+
+
+def MakeHist(x, label):
+
+	fig = plt.figure()
+	plt.hist(x)
+	plt.xlabel(label)
+	p16, p50, p84 = np.nanpercentile(x, q=[16, 50, 84])
+	plt.title(f"{label}\n 16-50-84th percentile = {p16:.2f}, {p50:.2f}, {p84:.2f}", fontsize=15)
+	return fig
